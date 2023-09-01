@@ -83,6 +83,7 @@ The `read_csv` bits are pretty obvious, except for one thing. What happens in th
 nbaplayers <- read_csv("~/GitHub/-jour479x_fall_2023/exercises/aggregates/data/nbaadvancedplayers2223.csv")
 ```
 **Answer** DESCRIBE THE RESULTS HERE
+There are 679 columns for 679 players and 27 rows in this data. The column titles are listed after chr and abl. Where chr = player name.
 
 Now we can inspect the data we imported. What does it look like? To do that, we use `head(nbaplayers)` to show the headers and **the first six rows of data**. If we wanted to see them all, we could just simply enter `nbaplayers` and run it.
 
@@ -107,6 +108,8 @@ So to do this, we'll take our dataset and we'll introduce a new operator: %\>%. 
 After we group them together, we need to count them. We do that first by saying we want to summarize our data (a count is a part of a summary). To get a summary, we have to tell it what we want. So in this case, we want a count. To get that, let's create a thing called total and set it equal to n(), which is `dplyr`s way of counting something.
 
 Here's the code. You should run it and then describe the output.
+
+
 
 ```{r}
 nbaplayers %>%
