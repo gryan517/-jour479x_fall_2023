@@ -120,6 +120,7 @@ nbaplayers %>%
 ```
 
 **Answer** DESCRIBE THE RESULTS HERE
+In the position column we see the positions are in alphabetical order, instead of another order such as sequential by the total. 
 
 So let's walk through that. We start with our dataset -- `nbaplayers` -- and then we tell it to group the data by a given field in the data which we get by looking at either the output of `head` or you can look in the environment where you'll see `nbaplayers`.
 
@@ -136,6 +137,9 @@ nbaplayers %>%
 ```
 
 **Answer** NAME A COMPLICATING FACTOR CONTAINED IN THE RESULT & HOW YOU WOULD RESOLVE IT.
+
+A complicating factor I notice are the repeating totals with PG-SG, SF_SG and SG-PG and then with PF-C ad PF-SF. I'm not too sure how I would resolve this. What I'm questioning out of the positions with the repeating numbers, which one comes first? 
+
 
 So the most common position in the NBA? Shooting guard, followed by center (although it's close between C and small forward).
 
@@ -199,11 +203,11 @@ Which position in the NBA plays the most minutes? And what is the highest and lo
 nbaplayers %>% 
   group_by(Pos) %>% 
   summarise(
-    total = sum(*COLUMN*), 
+    total = sum(MP), 
     avgminutes = mean(MP), 
-    minminutes = *function*(*COLUMN*),
-    maxminutes = *function*(*COLUMN*),
-    stdev = sd(*COLUMN*)) %>% arrange(desc(total))
+    minminutes = min(MP),
+    maxminutes = max(MP),
+    stdev = sd(MP)) %>% arrange(desc(total))
 ```
 
 So again, no surprise, shooting guards spend the most minutes on the floor in the NBA. They average 951 minutes, but we noted why that's trouble. The minimum is a one-minute wonder, max is some team failing at load management, and the standard deviation is a measure of how spread out the data is. In this case, not the highest spread among positions, but pretty high. So you know you've got some huge minutes players and a bunch of bench players.
@@ -211,3 +215,4 @@ So again, no surprise, shooting guards spend the most minutes on the floor in th
 Among the top five positions, which one seems the most interesting to you and why? What's a possible story here?
 
 **ANSWER** 
+I think there can be a story with the similar stats of A PF and SF. All members have responsibilities that work with one another to reach the teams goals, but these two positions in particular seem to be a push and pull situation, where as in most teams SF acts as as a defender and PF aids in assists. These two positions are powerfully working with one another and I think there can be a story there where these positions play a similar amount on average and max. I would propose the question, as a PF and SF do you have to be a highly reliable and consistent player (more so than other positions)?
