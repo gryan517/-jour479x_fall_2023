@@ -46,13 +46,13 @@ matches_2023|>
 2. What about the same shot stats from last season's first four games? You'll need to load the matches from 2022 - just change the season in the URL - and filter by date to find the first four games.
 
 ```{r}
-head(matches_2022)|>
+head(matches_2022)|> 
   group_by("Maryland Terrapins, Terps", date)|>
   summarise(
     sum_goals = (sum (so_g)/sum(so_g,sh_att))*100
     )
 
-#i need to isolate the first four dates and i think i would do so by creating some sort of range. I tried doing: date (dates here,  but i received an error. also head automatically brings the amount of rows down to 6. 
+#i need to isolate the first four dates and i think i would do so by creating some sort of range. I tried doing: date (dates here,  but i received an error. also head() automatically brings the amount of rows down to 6. 
 ```
 
 
@@ -64,9 +64,9 @@ head(matches_2022)|>
 matches_2023|>
   group_by(team, team_score, opponent_score = team_score)|>
   summarise(
-    count = n(),
+    count = n()
   )
-#i've isolated the ties, but now i'm trying to figure out a way to bring together the amount of ties by team.
+#i've isolated the ties, but now i'm trying to figure out a way to bring together the amount of ties by team. i thought i would do this by the sum function, but im not sure how to apply it correctly. another idea would be the count function. once i found this i was arrange the info in desc order.
 ```
 
 
