@@ -23,7 +23,7 @@ head(matches_2023)
 glimpse(matches_2023)
 ```
 ```{r}
-matches_2023 <- read_csv("https://github.com/dwillis/NCAAWomensSoccerData/blob/eff07032d899042b7777527f3fe45b448c46468f/data/ncaa_womens_soccer_matchstats_2022.csv")
+matches_2022 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2022.csv")
 ```
 ```{r}
 head(matches_2022)
