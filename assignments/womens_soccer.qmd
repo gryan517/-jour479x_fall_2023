@@ -52,7 +52,7 @@ head(matches_2022)|>
     sum_goals = (sum (so_g)/sum(so_g,sh_att))*100
     )
 
-#cannot figure out how to isolate the first four dates, also don't know what happened to the data. i used the following commands before and after going through other questions i get this error.
+#i need to isolate the first four dates and i think i would do so by creating some sort of range. I tried doing: date (dates here,  but i received an error. also head automatically brings the amount of rows down to 6. 
 ```
 
 
@@ -61,13 +61,12 @@ head(matches_2022)|>
 3. What about draws - Maryland started 2022 with 4 ties. Have any other teams had as many this season?
 
 ```{r}
-head(matches_2022)|>
-  group_by(team)|>
+matches_2023|>
+  group_by(team, team_score, opponent_score = team_score)|>
   summarise(
-    total = n(),
-    stdev_score = sd()
+    count = n(),
   )
-#I'm having the same issue with the previous question, but believe this would be the command minus this error. 
+#i've isolated the ties, but now i'm trying to figure out a way to bring together the amount of ties by team.
 ```
 
 
