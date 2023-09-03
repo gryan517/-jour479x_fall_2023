@@ -14,6 +14,7 @@ We'll want to start with 2023 match data, which is located in [this GitHub repos
 
 ```{r}
 matches_2023 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2023.csv")
+matches_2022 <- read_csv("https://github.com/dwillis/NCAAWomensSoccerData/blob/main/data/ncaa_womens_soccer_matchstats_2022.csv")
 ```
 
 Let's take a look at this data to see what it contains, using `head` and `glimpse`:
@@ -23,7 +24,6 @@ head(matches_2023)
 glimpse(matches_2023)
 ```
 ```{r}
-
 ```
 
 Now, onto the questions using aggregates, which means `group_by` and `summarize`:
@@ -45,9 +45,10 @@ matches_2023|>
 head(matches_2022)|>
   group_by("Maryland Terrapins, Terps", date)|>
   summarise(
-    sum_goals = (sum (so_g)/sum(so_g,sh_att))*100)
+    sum_goals = (sum (so_g)/sum(so_g,sh_att))*100
+    )
 
-#cannot figure out how to isolate the first four dates
+#cannot figure out how to isolate the first four dates, also don't know what happened to the data. i used the following commands before and after going through other questions i get this error.
 ```
 
 
@@ -57,12 +58,12 @@ head(matches_2022)|>
 
 ```{r}
 head(matches_2022)|>
-  group_by("team")|>
+  group_by(team)|>
   summarise(
     total = n(),
     stdev_score = sd()
   )
-#im not sure why only one team runs
+#I'm having the same issue with the previous question, but believe this would be the command minus this error. 
 ```
 
 
