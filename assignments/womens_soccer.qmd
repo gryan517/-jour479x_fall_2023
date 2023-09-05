@@ -36,9 +36,11 @@ Now, onto the questions using aggregates, which means `group_by` and `summarize`
 
 ```{r}
 matches_2023|>
-  group_by("Maryland Terrapins, Terps")|>
+  group_by(team)|>
   summarise(
-    sum_goals = (sum (so_g)/sum(so_g,sh_att))*100
+    sum_goals = sum (sh_att), 
+    sum_on_goal = sum(so_g), 
+    percent = (sum_on_goal/sum_goals)*100
   )
 
 ```
@@ -46,13 +48,16 @@ matches_2023|>
 2. What about the same shot stats from last season's first four games? You'll need to load the matches from 2022 - just change the season in the URL - and filter by date to find the first four games.
 
 ```{r}
-head(matches_2022)|> 
-  group_by("Maryland Terrapins, Terps", date)|>
+matches_2022|> 
+  filter(date < "2022-09-04")|>
+  filter(team == "Maryland Terrapins, Terps")|>
+  group_by(team)|>
   summarise(
-    sum_goals = (sum (so_g)/sum(so_g,sh_att))*100
+    sum_goals = sum(sh_att), 
+    sum_on_goal = sum(so_g), 
+    percent = (sum_on_goal/sum_goals)*100
     )
 
-#i need to isolate the first four dates and i think i would do so by creating some sort of range. I tried doing: date (dates here,  but i received an error. also head() automatically brings the amount of rows down to 6. 
 ```
 
 
@@ -74,9 +79,12 @@ matches_2023|>
 
 ```{r}
 matches_2023|>
-  group_by("Maryland Terrapins, Terps", team)|>
+  group_by(team)|>
   summarise(
-    corners_sd = sd(corners)
-   )
+    sum_corners = sum (corners), 
+    sum_opp_corners = sum(defensive_corners), 
+    diff = (sum_corners-sum_opp_corners)
+  ) |>
+arrange(desc(diff))
 ```
 
