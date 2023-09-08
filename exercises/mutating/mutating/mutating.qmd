@@ -111,4 +111,15 @@ matches_2023 |>
 
 What stands out to you here? Describe that below. Would you narrow down the results to certain teams based on the data? If so, do that in the code and explain why you did it below. Finally, what's the most interesting result to you that could be a story?
 
-**Answer** The results that stand out the most to me is the percentage difference to the California Golden Bears with 60%. Compared to the range of percentages this is definitely an outlier where there ae many teams in the 40% range, 30% and so on. There is also a point in the data where many teams have a goal percentage of 33.33.
+**Answer** The results that stand out the most to me is the percentage difference to the California Golden Bears with 60%. Compared to the range of percentages this is definitely an outlier where there are many teams in the 40% range, 30% and so on. There is also a point in the data where many teams have a goal percentage of 33.33. I'm not sure how I would narrow down the data. My instinct is to  re-arrange the data in desc order for total_on_goal but I"m not sure what I can get from this. Possibly if shooting more guarantees more total goals?
+```{r}
+matches_2023 |> 
+  group_by(team) |> 
+  summarise(
+    total_on_goal = sum(so_g),
+    total_goals = sum(goals)
+  ) |> 
+  mutate(percent = (total_goals/total_on_goal)*100) |> 
+  arrange(desc(total_on_goal))
+```
+
