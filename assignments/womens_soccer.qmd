@@ -14,6 +14,8 @@ We'll want to start with 2023 match data, which is located in [this GitHub repos
 
 ```{r}
 matches_2023 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2023.csv")
+
+matches_2022 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2022.csv")
 ```
 
 Let's take a look at this data to see what it contains, using `head` and `glimpse`:
@@ -21,9 +23,6 @@ Let's take a look at this data to see what it contains, using `head` and `glimps
 ```{r}
 head(matches_2023)
 glimpse(matches_2023)
-```
-```{r}
-matches_2022 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2022.csv")
 ```
 ```{r}
 head(matches_2022)
@@ -88,3 +87,38 @@ matches_2023|>
 arrange(desc(diff))
 ```
 
+
+## Significance Tests
+
+Hypothesis: there is more scoring in women's soccer this season than last season. (more goals per game)
+
+Add column to both dataframes that contain the total_goals for each match. To do this we will use mutate and we will save the results back to the same dataframe.
+
+```{r}
+matches_2022 <- matches_2022 |> mutate(total_goals = goals + defensive_goals)
+
+matches_2023 <- matches_2023 |> mutate(total_goals = goals + defensive_goals)
+
+```
+
+
+```{r}
+t.test(matches_2022$total_goals, matches_2023$total_goals)
+```
+ #$ references a specific column in that dataframe
+ 
+ Results: We reject the null hypothesis. The scoring for womens soccer is more this season  than scoring for last season. You can see the mean of this season (y) is greater than the mean of last season (x).
+ 
+The p-value is significantly less than .05 (our 95 percent confidence interval) meaning our hypothesis is TRUE. 
+
+```{r}
+matches_2022_early <- matches_2022 |> filter(date < '2022-09-14')
+```
+
+```{r}
+t.test(matches_2022_early$total_goals, matches_2023$total_goals)
+```
+Results: We still reject the null hypothesis in the early part of the season last year compared to where womens soccer is this season. The scoring for womens soccer is more this season  than scoring for last season at this point in the season. You can see the mean of this season (y) is greater than the mean of last season (x).
+ 
+
+The p-value is significantly less than .05 (our 95 percent confidence interval), meaning our hypothesis is TRUE. 
