@@ -118,7 +118,98 @@ matches_2022_early <- matches_2022 |> filter(date < '2022-09-14')
 ```{r}
 t.test(matches_2022_early$total_goals, matches_2023$total_goals)
 ```
-Results: We still reject the null hypothesis in the early part of the season last year compared to where womens soccer is this season. The scoring for womens soccer is more this season  than scoring for last season at this point in the season. You can see the mean of this season (y) is greater than the mean of last season (x).
+Results: We still reject the null hypothesis in the early part of the season last year compared to where womens soccer is this season. The scoring for womens soccer is narrowly up this season compared to  scoring for last season at this point in the season. You can see the mean of this season (y) is greater than the mean of last season (x).
  
 
 The p-value is significantly less than .05 (our 95 percent confidence interval), meaning our hypothesis is TRUE. 
+
+
+
+## Correlations 
+
+
+```{r}
+correlations <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2023.csv")
+```
+
+
+```{r}
+newcorrelations <- correlations |> 
+  mutate(
+    differential = goals - defensive_goals
+    )
+```
+
+
+```{r}
+newcorrelations |> summarise(correlation = cor(differential, fouls, method="pearson"))
+```
+Very weak correlation (closer to 0).
+
+
+```{r}
+newcorrelations |> 
+  summarise(correlation = cor(differential, yellow_cards, method="pearson"))
+```
+Weak, negative relationship. More yellow cards differential goes down slightly. The amount of yellow cards and goals a team has does not have a strong direct relationship. 
+
+
+```{r}
+fit <- lm(differential ~ fouls, data = newcorrelations)
+summary(fit)
+```
+
+Not statistically significant (p-value is not less than .05, aka not extremely notable/trustworthy/not a lot of predictive power). 
+
+Adjusted R-squared value: An adjusted percentage, fouls is insignificant in relation to goals. The larger the number, the stronger the relationship.
+
+Intercept (b) & Fouls (m): y=mx+b
+
+```{r}
+newcorrelations |> 
+  summarise(correlation = cor(differential, so_g, method="pearson"))
+```
+
+
+```{r}
+net <- lm(differential ~ so_g, data = newcorrelations)
+summary(net)
+```
+p-value: statistically significant
+
+Adj R-squared : shots on goal account for about half of what goes into determining goal differential. Shots on goal are important.
+
+y = 0.445467x + -2.530441
+- plug in 11 shots on goal. 
+
+```{r}
+(0.445467*11)+-2.530441 
+```
+Interpreting: predicted UMD would have won about 2 goals.
+
+```{r}
+newcorrelations <- correlations |> 
+  mutate(
+    differential = shutouts - defensive_shutouts
+    )
+```
+
+```{r}
+newcorrelations |> summarise(correlation = cor(differential, saves, method="pearson"))
+```
+Moderate, negative relationship. More saves differential goes down slightly. The amount of saves and shutouts a team has does not have a strong direct relationship.
+
+```{r}
+fit <- lm(differential ~ saves, data = newcorrelations)
+summary(fit)
+```
+p-value: statistically significant
+
+Adj R-squared: counts for about 10% of what goes into the saves differential. 
+
+Intercept (b) & Saves (m): y=(-.08)x+0.342
+
+```{r}
+(-.08)*14+0.342
+```
+
