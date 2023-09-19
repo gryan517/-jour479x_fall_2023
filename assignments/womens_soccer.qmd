@@ -203,9 +203,9 @@ Moderate, negative relationship. More saves differential goes down slightly. The
 fit <- lm(differential ~ saves, data = newcorrelations)
 summary(fit)
 ```
-p-value: statistically significant
+p-value: Statistically significant. The difference in shutouts and saves are not random. 
 
-Adj R-squared: counts for about 10% of what goes into the saves differential. 
+Adj R-squared: counts for about 10% of what goes into the saves differential. We can explain 10% of the difference in shutouts by looking at saves.
 
 Intercept (b) & Saves (m): y=(-.08)x+0.342
 
