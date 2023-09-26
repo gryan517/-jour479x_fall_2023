@@ -13,3 +13,82 @@ Detail example: it appears that teams are inconsistent about how they define the
 plays_2023 |> filter(drive_number == 1, play_number == 1, play_type != 'Kickoff') |> distinct(home, play_type)
 ```
 
+
+
+
+##College Football Game Data Analysis
+
+```{r}
+logs <- read_csv ("https://dwillis.github.io/sports-data-files/footballlogs1122.csv")
+```
+```{r}
+newlogs <- logs |> 
+  mutate(
+    differential = TeamScore - OpponentScore
+    )
+```
+
+```{r}
+newlogs |> 
+  summarise(correlation = cor(Penalties, differential, method="pearson"))
+```
+```{r}
+fit <- lm(differential ~ Penalties, data = newlogs)
+summary(fit)
+```
+p-value: looking at the p-value, 0.01058, it is less than .05 which indicates that the relationship in this model between the differential score and penalties is statistically significant. This indicates that the results are not random. 
+
+Adjusted R-squared: the adjusted R-square indicates that .03 percent of the score differential can be explained by the penalties. This means that this is likely not a useful regression.
+
+
+##College Football Game Data Analysis (part 2)
+```{r}
+simplelogs <- logs |> select_if(is.numeric) |> select(-Game) |> select(differential, Penalties, Fumbles, TurnoverMargin, Intercepts, Rushing, PenYds)
+```
+
+```{r}
+cormatrix <- rcorr(as.matrix(simplelogs))
+
+cormatrix$r
+```
+Fumbles and turnover have a high correlation, which makes sense since fumbles likely lead to turnovers. 
+
+PenYds has a very low correlation in the model, which tells me that this aspect wouldn't effect the scoring as much in the model (effect residual by 0.1)
+
+
+```{r}
+newlogs <- logs |> mutate(
+  differential = TeamScore - OpponentScore, 
+  Fumbles = Fumbles - DefFumbles,
+  TurnoverMargin = TotalTurnovers - DefTotalTurnovers,
+  Intercepts = Interceptions - DefInterceptions,
+  Rushing = FirstDownRush - DefFirstDownRush,
+  PenYds = PenaltyYds - DefPenaltyYds)
+```
+
+```{r}
+model1 <- lm(differential ~ Penalties + Fumbles + TurnoverMargin + Intercepts + Rushing + PenYds, data=logs)
+summary(model1)
+```
+Somehow we get the same Residual standard error with or without Intercepts, and with all the other information there. (this was a mistake without Penalties).
+
+Adding rushing brought the Residual standard error down to 16.31, but taking TurnoverMargin out bumps this value up about .05.(this was a mistake without Penalties).
+
+Penalties + Fumbles + TurnoverMargin + Intercepts + Rushing + PenYds = 16.28 (this is the lowest I have been able to get my Residual standard error).
+
+Rushing has a significant effect on the model.
+
+About 50% of the listed data (Penalties + Fumbles + TurnoverMargin + Intercepts + Rushing + PenYds) can be attributed to explaining the score differential.
+
+##College Football Game Data Analysis (part 3 - Narrowing the data)
+
+```{r}
+newlogs |> 
+     filter(
+         Result == "Maryland" & Season == '2022-2023'
+     ) |> summarise(avg_score = mean(TeamScore), avg_opp = mean(OpponentScore))
+```
+
+Summary: 
+
+There is definitely significance in the correlation between the scoring differential and penalties. Penalties alone is not a sole predictor of the scoring differential, nor are Fumbles + TurnoverMargin + Intercepts + Rushing + PenYds perfect predictors. Though together there is a minimization in the residual standard error off from the data. Together these aspects are stronger, but there still is a 50% explanation as to what can account for the score differential. This is high, which means were getting close, but I believe that there may be other aspects I'm not thinking of or don't quite understand enough to include. As for the filtering, I think this data could give more of a story when I solve how to do this. When a game is close, this is where aspects such as turnovers and penalties can make or break a game. 
