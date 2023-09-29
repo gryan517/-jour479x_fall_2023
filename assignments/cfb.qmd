@@ -1,6 +1,7 @@
 ```{r}
 library(tidyverse)
 library(cfbfastR)
+library(Hmisc)
 ```
 
 
@@ -24,7 +25,7 @@ logs <- read_csv ("https://dwillis.github.io/sports-data-files/footballlogs1122.
 ```{r}
 newlogs <- logs |> 
   mutate(
-    differential = TeamScore - OpponentScore
+    differential = abs(TeamScore - OpponentScore)
     )
 ```
 
@@ -43,7 +44,8 @@ Adjusted R-squared: the adjusted R-square indicates that .03 percent of the scor
 
 ##College Football Game Data Analysis (part 2)
 ```{r}
-simplelogs <- logs |> select_if(is.numeric) |> select(-Game) |> select(differential, Penalties, Fumbles, TurnoverMargin, Intercepts, Rushing, PenYds)
+simplelogs <- logs |> 
+  select_if(is.numeric) |> select(-Game) |> select(differential, Penalties, Fumbles, TurnoverMargin, Intercepts, Rushing, PenYds)
 ```
 
 ```{r}
@@ -83,10 +85,9 @@ About 50% of the listed data (Penalties + Fumbles + TurnoverMargin + Intercepts 
 ##College Football Game Data Analysis (part 3 - Narrowing the data)
 
 ```{r}
-newlogs |> 
+closegames <- logs |> 
      filter(
-         Result == "Maryland" & Season == '2022-2023'
-     ) |> summarise(avg_score = mean(TeamScore), avg_opp = mean(OpponentScore))
+         differential < 10)
 ```
 
 Summary: 

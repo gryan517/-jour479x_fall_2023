@@ -1,1 +1,45 @@
+```{r}
+library(tidyverse)
+```
+
+```{r}
+matchsets <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensVolleyballData/main/data/ncaa_womens_volleyball_matchstats_2022.csv")
+```
+
+```{r}
+teamquality <- matchsets |> 
+  select(team, defensive_r_err, defensive_b_err, tb, hit_pct, total_attacks, team_score, opponent_score)
+```
+
+```{r}
+teamzscore <- teamquality |>
+  group_by(team) |> 
+  mutate(
+    defensive_r_err = as.numeric(scale(defensive_r_err, center = TRUE, scale = TRUE)),
+    defensive_b_err = as.numeric(scale(defensive_b_err, center = TRUE, scale = TRUE)),
+    tb = as.numeric(scale(tb, center = TRUE, scale = TRUE)),
+    hit_pct = as.numeric(scale(hit_pct, center = TRUE, scale = TRUE)),
+    total_attacks = as.numeric(scale(total_attacks, center = TRUE, scale = TRUE)),
+    team_score = as.numeric(scale(team_score, center = TRUE, scale = TRUE)),
+    opponent_score = as.numeric(scale(opponent_score, center = TRUE, scale = TRUE)),
+    TotalZscore = defensive_r_err + defensive_b_err + hit_pct + total_attacks + total_attacks + team_score + opponent_score
+    ) |> ungroup()
+```
+
+```{r}
+head(teamzscore)
+```
+
+```{r}
+teamzscore |> arrange(desc(TotalZscore))
+```
+
+Maryland is not within the top 20, maybe even top 40 within this data set, but is definitely among the higher z-scores. 
+
+```{r}
+ marylandzscore <- teamzscore |> 
+     group_by(team) |>
+  filter(TotalZscore > 5) |>
+  arrange(desc(TotalZscore))
+```
 
