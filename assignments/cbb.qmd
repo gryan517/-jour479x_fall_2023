@@ -112,7 +112,7 @@ teamquality <- gamelogs |>
 
 ```{r}
 teamtotals <- teamquality |> 
-  group_by(Conference, Team) |> 
+  group_by(Team) |> 
   summarise(
     FGAvg = mean(TeamFGPCT), 
     ReboundAvg = mean(TeamTotalRebounds), 
