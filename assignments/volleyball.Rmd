@@ -28,14 +28,12 @@ teamtotals <- teamquality |>
 ```{r}
 teamzscorevball <- teamtotals |>
   mutate(
-    DefRErrZscore = as.numeric(scale(DefRErrAvg, center = TRUE, scale = TRUE)) * -1,
-    DefBErrZscore = as.numeric(scale(DefBErrAvg, center = TRUE, scale = TRUE)) * -1,
     TBZscore = as.numeric(scale(TBAvg, center = TRUE, scale = TRUE)),
     HitPctZscore = as.numeric(scale(HitPctAvg, center = TRUE, scale = TRUE)),
     TotalAttackZscore = as.numeric(scale(TotalAttackAvg, center = TRUE, scale = TRUE)),
     TeamScoreZscore = as.numeric(scale(TeamScoreAvg, center = TRUE, scale = TRUE)),
     OppScoreZscore = as.numeric(scale(OppScoreAvg, center = TRUE, scale = TRUE)) * -1,
-    TotalZscore = DefRErrZscore + DefBErrZscore + TBZscore + HitPctZscore + TotalAttackZscore + TeamScoreZscore + TeamScoreZscore + OppScoreZscore
+    TotalZscore = TBZscore + HitPctZscore + TotalAttackZscore + TeamScoreZscore + OppScoreZscore
     ) |> ungroup()
 ```
 
@@ -48,6 +46,10 @@ teamzscorevball |> arrange(desc(TotalZscore))
 ```
 
 Maryland is closer to a 0 z-score, which means that Maryland is much closer to the mean of the data score, with a slight over performance in team quality. 
+
+I what is interesting in this data, is Wisconsin's effectiveness as a team. There are here at #1, outperforming other teams. This data is from 2022, and this year Wisconsin is #1 so far. Although this is not a predictive tool like residuals, I find this an interesting finding that I wonder if these metrics are contributing to their success this year. 
+
+The two effective college volleyball teams, Wisconsin and Towson, are out dominating there respective conferences (NCAA and CAA). Taking a look at the teams total blocks, hit percentages, total attacks and team and opponent scores, we can determine the greatness of college teams.  
 
 ```{r}
  marylandzscore <- teamzscorevball |> 
