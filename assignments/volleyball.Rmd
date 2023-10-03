@@ -56,4 +56,4 @@ Maryland is closer to a 0 z-score, which means that Maryland is much closer to t
   arrange(desc(TotalZscore))
 ```
 
-I think a good story here would be the difference between Towson's success and Maryland's success within these merits. Towson is within the top 
+I think a good story here would be the difference between Towson's success and Maryland's success within these merits. Towson is within the top 5 whereas Maryland is bordering the mean. We've discussed in class the geography of the team explaining an undoubted success for the team. But here we have two teams about an hour away from one another, I would like to investigate this more, and its potential differences from season to season. 
