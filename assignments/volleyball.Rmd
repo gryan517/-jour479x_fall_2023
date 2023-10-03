@@ -27,7 +27,6 @@ teamtotals <- teamquality |>
 
 ```{r}
 teamzscorevball <- teamtotals |>
-  group_by(team) |> 
   mutate(
     DefRErrZscore = as.numeric(scale(DefRErrAvg, center = TRUE, scale = TRUE)) * -1,
     DefBErrZscore = as.numeric(scale(DefBErrAvg, center = TRUE, scale = TRUE)) * -1,
@@ -48,12 +47,13 @@ head(teamzscorevball)
 teamzscorevball |> arrange(desc(TotalZscore))
 ```
 
-Maryland is not within the top 20, maybe even top 40 within this data set, but is definitely among the higher z-scores. 
+Maryland is closer to a 0 z-score, which means that Maryland is much closer to the mean of the data score, with a slight over performance in team quality. 
 
 ```{r}
- marylandzscore <- teamzscore |> 
+ marylandzscore <- teamzscorevball |> 
      group_by(team) |>
   filter(TotalZscore > 5) |>
   arrange(desc(TotalZscore))
 ```
 
+I think a good story here would be the difference between Towson's success and Maryland's success within these merits. Towson is within the top 
