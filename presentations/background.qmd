@@ -4,9 +4,20 @@ Do successful (winning) Big Ten teams rely on their first-year players more than
 ```{r}
 library(tidyverse)
 ```
+
 Data needed: Players and class standings, Shots by each player (and will compare by their class standings), Goals by each player, Assists by each player, Position (I don't think this is necessary for my question but I think can lead to interesting results and may help me to further expand my analysis to other stories/questions)
 
 ```{r}
-umd <- read_file ("https://github.com/gryan517/-jour479x_fall_2023/blob/main/data/2022%20Women's%20Soccer%20Roster%20-%20University%20of%20Maryland%20Athletics.pdf")
+umd_players_2022 <- read_csv ("https://github.com/gryan517/-jour479x_fall_2023/blob/main/data/umd_2022_player_stats.csv")
 ```
 
+I'm having trouble figuring out the "Rows: 0", but this is what the step would look like once I figure this out.
+
+```{r}
+head(umd_players_2022)
+```
+
+```{r}
+umd_gameresults_2023 <- read_csv ("https://github.com/gryan517/-jour479x_fall_2023/blob/7cb7b8612eb310502f086ea26d3032c20871c854/data/umd_2022_gameresults.csv")
+```
+I feel that there is a more simplified way of inputting the data. So before doing this for each Big Ten team, I think this is my biggest question when inputting the data. I have all the data I need here my questions for it are: Will the game results be interpreted by R in the "GOALS SCORED [ASSISTED]" column? And will the data still be plausible to use if I enter it into one csv file?
