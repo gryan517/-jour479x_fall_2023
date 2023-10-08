@@ -1,0 +1,12 @@
+##Data Backgrounding 
+Do successful (winning) Big Ten teams rely on their first-year players more than others? 
+
+```{r}
+library(tidyverse)
+```
+Data needed: Players and class standings, Shots by each player (and will compare by their class standings), Goals by each player, Assists by each player, Position (I don't think this is necessary for my question but I think can lead to interesting results and may help me to further expand my analysis to other stories/questions)
+
+```{r}
+umd <- read_file ("https://github.com/gryan517/-jour479x_fall_2023/blob/main/data/2022%20Women's%20Soccer%20Roster%20-%20University%20of%20Maryland%20Athletics.pdf")
+```
+
