@@ -21,3 +21,7 @@ head(umd_players_2022)
 umd_gameresults_2023 <- read_csv ("https://github.com/gryan517/-jour479x_fall_2023/blob/7cb7b8612eb310502f086ea26d3032c20871c854/data/umd_2022_gameresults.csv")
 ```
 I feel that there is a more simplified way of inputting the data. So before doing this for each Big Ten team, I think this is my biggest question when inputting the data. I have all the data I need here my questions for it are: Will the game results be interpreted by R in the "GOALS SCORED [ASSISTED]" column? And will the data still be plausible to use if I enter it into one csv file?
+
+What I would do with this data is take a look at the overall amount of goals made by freshman in comparison to other class standings, as well as how many of those goals were assisted by other freshman or class standing. Additionally I would look to the winning games and who made goals in that game (but the way that Maryland has the data format, I'm assuming that R wont be able to interpret this?). 
+
+An aside, I still think it would be interesting to include position as I think this will lead to interesting discoveries once I start more analyzing.
