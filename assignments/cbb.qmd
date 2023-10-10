@@ -153,3 +153,78 @@ teamzscore |>
   select(Team, TotalZscore)
 ```
 
+##Line Charts
+Are for data over time, individual game level data. 
+```{r}
+logs <- read_csv("https://dwillis.github.io/sports-data-files/logs22.csv")
+```
+```{r}
+umd <- logs |> filter(Team == "Maryland")
+```
+
+Plotting FGPCT by game.
+```{r}
+ggplot() + geom_line(data=umd, aes(x=Date, y=TeamFGPCT))
+```
+This chart is showing the team is very unreliable and inconsistent. The range is "zoomed" in, therefore the drops are looking more drastic.
+
+Below, we change the scale to something wider. 
+To make the axis what you want, you can use scale_x_continuous or scale_y_continuous and pass in a list with the bottom and top value you want. You do that like this:
+
+```{r}
+ggplot() + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT)) + 
+  scale_y_continuous(limits = c(0, .6))
+```
+Lets put two lines on the same line chart for comparison.
+
+```{r}
+ill <- logs |> filter(Team == "Illinois")
+```
+
+```{r}
+ggplot() + geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red")
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange")
+```
+Let’s flatten our lines out by zeroing the Y axis. We’ll set the upper limit of the y-axis to 0.70 because Illinois shot fantastically well in one December game.
+
+```{r}
+ggplot() + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
+  scale_y_continuous(limits = c(0, .70))
+```
+
+```{r}
+powerfive <- c("SEC", "Big Ten", "Pac-12", "Big 12", "ACC")
+
+p5conf <- logs |> filter(Conference %in% powerfive)
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=p5conf, aes(x=Date, y=TeamFGPCT, group=Team), color="grey") + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
+  scale_y_continuous(limits = c(0, .65))
+```
+
+Lets compare to the average. 
+```{r}
+average <- logs |> group_by(Date) |> summarise(mean_shooting=mean(TeamFGPCT))
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=p5conf, aes(x=Date, y=TeamFGPCT, group=Team), color="grey") + 
+  geom_line(data=umd, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=ill, aes(x=Date, y=TeamFGPCT), color="orange") + 
+  geom_line(data=average, aes(x=Date, y=mean_shooting), color="black") + 
+  scale_y_continuous(limits = c(0, .70))
+```
+

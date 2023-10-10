@@ -92,4 +92,85 @@ closegames <- logs |>
 
 Summary: 
 
-There is definitely significance in the correlation between the scoring differential and penalties. Penalties alone is not a sole predictor of the scoring differential, nor are Fumbles + TurnoverMargin + Intercepts + Rushing + PenYds perfect predictors. Though together there is a minimization in the residual standard error off from the data. Together these aspects are stronger, but there still is a 50% explanation as to what can account for the score differential. This is high, which means were getting close, but I believe that there may be other aspects I'm not thinking of or don't quite understand enough to include. As for the filtering, I think this data could give more of a story when I solve how to do this. When a game is close, this is where aspects such as turnovers and penalties can make or break a game. 
+There is definitely significance in the correlation between the scoring differential and penalties. Penalties alone is not a sole predictor of the scoring differential, nor are Fumbles + TurnoverMargin + Intercepts + Rushing + PenYds perfect predictors. Though together there is a minimization in the residual standard error off from the data. Together these aspects are stronger, but there still is a 50% explanation as to what can account for the score differential. This is high, which means were getting close, but I believe that there may be other aspects I'm not thinking of or don't quite understand enough to include. As for the filtering, I think this data could give more of a story when I solve how to do this. When a game is close, this is where aspects such as turnovers and penalties can make or break a game.
+
+##Waffle Charts
+Use for comparisons (two things)
+```{r}
+library("waffle")
+```
+
+```{r}
+md <- c("Rushing"=175, "Passing"=314)
+ms <- c("Rushing"=100, "Passing"=221)
+```
+
+```{r}
+waffle(
+        md, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "red")
+)
+```
+waffle iron = comapres two charts. but lok what happened here, Michigan State is deceptively than showing that it has the same yardage in comaprison to Maryland, which is not true. So after this chart we'll show how to fix this with white space.
+```{r}
+iron(
+ waffle(md, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "red")
+        ),
+ waffle(ms, 
+        rows = 10, 
+        title="Michigan State's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "green")
+        )
+)
+```
+Here's how we fix the previous waffle iron. 
+```{r}
+md <- c("Rushing"=175, "Passing"=314)
+ms <- c("Rushing"=100, "Passing"=221, 168)
+```
+
+```{r}
+iron(
+ waffle(md, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 1 yard", 
+        colors = c("black", "red")
+        ),
+ waffle(ms, 
+        rows = 10, 
+        title="Michigan State's offense", 
+        xlab="1 square = 1 yard",
+        colors = c("black", "green", "white")
+        )
+)
+```
+
+Are the blocks too small? Lets make the squares larger
+```{r}
+iron(
+ waffle(md/2, 
+        rows = 10, 
+        title="Maryland's offense", 
+        xlab="1 square = 2 yards", 
+        colors = c("black", "red")
+        ),
+ waffle(ms/2, 
+        rows = 10, 
+        title="Michigan State's offense", 
+        xlab="1 square = 2 yards",
+        colors = c("black", "green", "white")
+        )
+)
+```
+
+
+
