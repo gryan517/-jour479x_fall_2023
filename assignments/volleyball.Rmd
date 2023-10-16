@@ -64,3 +64,15 @@ With the mentioned merits averaged together, Wisconsin and Towson take the #1 an
 ```
 
 I think a good story here would be the difference between Towson's success and Maryland's success within these merits. Towson is within the top 5 whereas Maryland is bordering the mean. We've discussed in class the geography of the team explaining an undoubted success for the team. But here we have two teams about an hour away from one another, I would like to investigate this more, and its potential differences from season to season. 
+
+#scraping data 
+```{r}
+ vbdata <- read_csv("https://raw.githubusercontent.com/Sports-Roster-Data/womens-volleyball/main/vb_rosters_2023_24.csv")
+```
+
+```{r}
+rosters_with_towns <- rosters |>
+  mutate(HomeTownCopy = Hometown)
+  separate(Hometown, c('town', 'state'),sep=',')
+```
+

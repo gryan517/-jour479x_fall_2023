@@ -1,8 +1,6 @@
-Should I change to: 
-Individual players and when are successful players at their most successful/relied upon? 
-Or can just expand upon my initial question, Do successful (winning) Big Ten teams rely on their first-year players more than others? When are freshman players relied upon? 
 
-College career (Freshman -> Senior) playtime and success? 
+Or can just expand upon my initial question, Do successful (winning) Big Ten teams rely on their first-year players more than others? When are freshman players relied upon? 
+ 
 
 ##Data Backgrounding 
 Do successful (winning) Big Ten teams rely on their first-year players more than others? 
@@ -14,13 +12,90 @@ library(tidyverse)
 Data needed: Players and class standings, Shots by each player (and will compare by their class standings), Goals by each player, Assists by each player, Position (I don't think this is necessary for my question but I think can lead to interesting results and may help me to further expand my analysis to other stories/questions)
 
 ```{r}
-umd_players_2022 <- read_csv ("https://github.com/gryan517/-jour479x_fall_2023/blob/main/data/umd_2022_player_stats.csv")
+umd_players_2022 <- read_csv ("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_playerstats_2022.csv")
 ```
 
-I'm having trouble figuring out the "Rows: 0", but this is what the step would look like once I figure this out.
+```{r}
+head(ncaa_players_2022)
+```
+```{r}
+ncaa_players_2022|>
+  group_by(team, yr) |>
+  summarise(
+    total = n()
+  ) 
+```
+```{r}
+ncaa_players_2022|>
+  group_by(team, yr) |>
+  summarise(
+    total = n(),
+    mean_goals = mean(goals)
+  )
+```
+
+Basically what I want to see is from each team, the avg amount of goals for each yr by team. I wouldn't do it for the NCAA entirely because 1. Looking at the teams separately tells more of a story (we can see if one team relies on one year more than another) 2. We can easily narrow it down to the big 10 teams. 
+
+I think the above can be a way to do this. I wonder if I am getting somewhere with the coding below? I'm hitting a road block though.
+
 
 ```{r}
-head(umd_players_2022)
+byyr <- ncaa_players_2022 |>
+  mutate(
+    goalspergame = goals/games
+  ) |> 
+  filter(
+    yr == "Fr" |
+    yr == "Sr" |
+    yr == "So" | 
+    yr == "Jr")
+ 
+```
+
+```{r}
+ggplot() + geom_bar(data=byyr, aes(x=yr, weight=goalspergame))
+```
+This is for all of NCAA grouped together by yr. Now I just have to filter by the big ten teams. Also this doesnt seem right, or maybe I am interpreting this wrong, but the numbers seem way too big. I understand these dont represent an average for each game, but does this represent overall, across all games, each year has scored these many goals across the season on average??
+
+```{r}
+big10 <- ncaa_players_2022 |>
+  mutate(
+    goalspergame = goals/games
+  ) |> 
+  filter(
+    team == "Big Ten" 
+  )
+```
+I would like to narrow this down to big ten schools and then show maybe a stacked bar graph of each year for each school out of the big ten. 
+
+
+
+##other ideas 
+```{r}
+pergame <- ncaa_players_2022 |>
+  group_by (team) |>
+  mutate(
+  gspergame = gs/games,
+  goalspergame = goals/games,
+  pointspergame = points/games, 
+  assistspergame = assists/games
+  ) |>
+  select(team, yr, pos, gs, goals, points, assists)
+```
+
+
+Im having abit of trouble with this code block, I think I need to enter na.omit(), or basically omit the NA's. Once I am abkle to do this 
+```{r}
+teamzscore <- pergame |>
+  group_by(team)|>
+  mutate(
+    gszscore = as.numeric(scale(gspergame, center = TRUE, scale = TRUE)),
+    goalszscore = as.numeric(scale(goalspergame, center = TRUE, scale = TRUE)),
+    pointszscore = as.numeric(scale(pointspergame, center = TRUE, scale = TRUE)),
+    assistszscore = as.numeric(scale(assistspergame, center = TRUE, scale = TRUE)),
+    totalzscore = gszscore + goalszscore + pointszscore + assistszscore
+  ) |> 
+  ungroup() 
 ```
 
 ```{r}

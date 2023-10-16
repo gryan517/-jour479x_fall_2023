@@ -1,0 +1,45 @@
+```{r}
+library(tidyverse)
+```
+```{r}
+logs <- read_csv("https://dwillis.github.io/sports-data-files/logs22.csv")
+
+```
+
+```{r}
+nu <- logs |> filter(Team == "Nebraska")
+```
+
+```{r}
+head(nu)
+```
+
+```{r}
+ggplot() + geom_line(data=nu, aes(x=Date, y=TeamFGPCT))
+```
+
+```{r}
+ggplot() + 
+  geom_line(data=nu, aes(x=Date, y=TeamFGPCT)) +
+  scale_y_continuous(limits = c(0, .7))
+```
+
+```{r}
+msu <- logs |> filter(Team == "Michigan State")
+
+ggplot() + 
+  geom_line(data=nu, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=msu, aes(x=Date, y=TeamFGPCT), color="green") +
+  scale_y_continuous(limits = c(0, .7))
+```
+
+```{r}
+big <- logs |> filter(Conference == "Big Ten")
+
+ggplot() + 
+  geom_line(data=big, aes(x=Date, y=TeamFGPCT, group=Team), color="grey") +
+  geom_line(data=nu, aes(x=Date, y=TeamFGPCT), color="red") + 
+  geom_line(data=msu, aes(x=Date, y=TeamFGPCT), color="green") +
+  scale_y_continuous(limits = c(0, .7))
+```
+
