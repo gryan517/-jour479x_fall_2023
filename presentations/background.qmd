@@ -66,8 +66,7 @@ big10 <- ncaa_players_2022 |>
     team == "Big Ten" 
   )
 ```
-I would like to narrow this down to big ten schools and then show maybe a stacked bar graph of each year for each school out of the big ten. 
-
+I would like to narrow this down to big ten schools and then show maybe a stacked bar graph of each year for each school out of the big ten.I think I would need different data for this that also represents the conference. I could filter through the data, but I wasnt able to find all the bug 10 schools so I think there would be issues in this. I would also like to incorporate the (or potentially replace amount of goals) with minutes played. But ultimately once i have access to data that has the conference and minutes played, I think my graphs will look a lot different from wht it looks like now. 
 
 
 ##other ideas 
