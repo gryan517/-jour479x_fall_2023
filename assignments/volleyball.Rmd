@@ -76,3 +76,86 @@ rosters_with_towns <- rosters |>
   separate(Hometown, c('town', 'state'),sep=',')
 ```
 
+
+##Dumbbell and Lollipop Charts
+
+```{r}
+library(tidyverse)
+library(ggalt)
+```
+```{r}
+logs <- read_csv("https://dwillis.github.io/sports-data-files/ncaa_womens_volleyball_matchstats_2022.csv")
+```
+Looking at the difference between a team’s errors versus their opponents’ errors. We’re going to add up all team errors and opponent errors for a team in a season and take a look at where they come out. 
+```{r}
+big10 <- c("Nebraska Cornhuskers", "Iowa Hawkeyes", "Minnesota Golden Gophers", "Illinois Fighting Illini", "Northwestern Wildcats", "Wisconsin Badgers", "Indiana Hoosiers", "Purdue Boilermakers", "Ohio St. Buckeyes", "Michigan Wolverines", "Michigan St. Spartans", "Penn St. Nittany Lions", "Rutgers Scarlet Knights", "Maryland Terrapins, Terps")
+
+errors <- logs |>
+  filter(team %in% big10) |> 
+  group_by(team) |> 
+  summarise(
+    total_errors = sum(errors), 
+    opp_errors = sum(defensive_errors))
+```
+
+Let's create the plot! xend= end of the dumbbell. Lets distinguish opponent errors from team errors with color, makes the dots larger, and lighten the background. 
+```{r}
+ggplot() + 
+  geom_dumbbell(
+    data=errors, 
+    aes(y=team, x=total_errors, xend=opp_errors),
+    size = 1,
+    colour = "grey",
+    colour_x = "green",
+    colour_xend = "red") + 
+  theme_minimal()
+  
+```
+
+
+```{r}
+ggplot() + 
+  geom_dumbbell(
+    data=errors, 
+    aes(y=reorder(team, opp_errors), x=total_errors, xend=opp_errors),
+    size = 1,
+    colour = "grey",
+    colour_x = "green",
+    colour_xend = "red") + 
+  theme_minimal()
+```
+Looking at the graph this way we can see that Maryland's opponents made the most errors this season. You can also see that the best teams: Michigan, Wisconsin and Minnesota - dont make too many errors.
+
+
+Lollipop Charts
+looking specifically at opponent errors for teams. 
+```{r}
+ggplot() + 
+  geom_lollipop(
+    data=errors, 
+    aes(y=team, x=opp_errors), 
+    horizontal = TRUE
+    ) + theme_minimal() + 
+  labs(title = "Maryland, Rutgers force more errors", y="team")
+```
+
+```{r}
+md <- errors |> filter(team == "Maryland Terrapins, Terps")
+```
+```{r}
+ggplot() + 
+  geom_lollipop(
+    data=errors, 
+    aes(y=reorder(team, opp_errors), x=opp_errors), 
+    horizontal = TRUE
+    ) + 
+  geom_lollipop(
+    data=md,
+    aes(y=team, x=opp_errors),
+    horizontal = TRUE,
+    color = "red"
+  ) + 
+  theme_minimal() + 
+  labs(title = "Maryland forced the most errors among Big Ten teams", y="team")
+```
+
