@@ -6,7 +6,6 @@ library(tidyverse)
 library(dplyr)
 ```
 
-Data needed: Players and class standings, Shots by each player (and will compare by their class standings), Goals by each player, Assists by each player, Position (I don't think this is necessary for my question but I think can lead to interesting results and may help me to further expand my analysis to other stories/questions)
 
 ```{r}
 ncaa_players_2023 <- read_csv ("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_playerstats_2023.csv")
@@ -133,4 +132,5 @@ assistsbyyr |>
     yr == "Fr")
 ```
 
-To do that you'll need group_by() to show each team and summarize() to sum up the total minutes, and then do the same for just freshmen using filter(). You want the output to have a column for each team and a column for the number of total minutes. For the first-years, you want a column for each team and a column for total minutes by freshmen. Then you can combine the two dataframes using a function called inner_join(): https://thescoop.org/data_journalism_book/merging.html#joining-data And create a percentage of minutes played by first-year players. 
+##joining
+
