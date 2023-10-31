@@ -87,7 +87,7 @@ ncaa_players_2023|>
   ) 
 ```
 
-```{r}
+
 ```{r}
 assistsbyyr <- ncaa_players_2023 |>
   mutate(
@@ -123,5 +123,14 @@ ggplot() +
     aes(x=team, weight=goalspergame, fill=yr)) + 
   coord_flip()
 ```
+```{r}
+assistsbyyr |>
+  group_by(team, yr) |>
+  summarise(
+    sum = (assists)
+  ) |>
+  filter(
+    yr == "Fr")
 ```
 
+To do that you'll need group_by() to show each team and summarize() to sum up the total minutes, and then do the same for just freshmen using filter(). You want the output to have a column for each team and a column for the number of total minutes. For the first-years, you want a column for each team and a column for total minutes by freshmen. Then you can combine the two dataframes using a function called inner_join(): https://thescoop.org/data_journalism_book/merging.html#joining-data And create a percentage of minutes played by first-year players. 
