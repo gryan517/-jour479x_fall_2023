@@ -34,8 +34,6 @@ ncaa_players_2023|>
 
 Basically what I want to see is from each team, the avg amount of goals for each yr by team. I wouldn't do it for the NCAA entirely because 1. Looking at the teams separately tells more of a story (we can see if one team relies on one year more than another) 2. We can easily narrow it down to the big 10 teams. 
 
-I think the above can be a way to do this. I wonder if I am getting somewhere with the coding below? I'm hitting a road block though.
-
 
 ```{r}
 byyr <- ncaa_players_2023 |>
