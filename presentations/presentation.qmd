@@ -62,7 +62,7 @@ byyr <- ncaa_players_2023 |>
     team == "Purdue Boilermakers"
   )
 ```
-
+Here I am creating a graph to demonstrate the relationship between each year for each of the Big 10 teams.The graph displays the amount of goals each of the years makes in comparison to one another on each team. 
 ```{r}
 ggplot() + 
   geom_bar(
@@ -71,7 +71,7 @@ ggplot() +
   coord_flip()
 ```
 
-So now that we have a graph that represents the amount of goals each year from each team, I think this can more accurately represent the data I would like to display. Additionally, I would like to do the same with minutes played for each year for each Big Ten Team. This all would accurately align with my question. 
+So now that we have a graph that represents the amount of goals each year from each team, I think this can more accurately represent the data I would like to display. Lets see how each year contributes to assists... 
 
 
 ##assists by year
