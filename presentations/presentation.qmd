@@ -116,10 +116,20 @@ assistsbyyr <- ncaa_players_2023 |>
 ```{r}
 ggplot() + 
   geom_bar(
-    data=byyr, 
-    aes(x=team, weight=goalspergame, fill=yr)) + 
+    data=assistsbyyr, 
+    aes(x=team, weight=assistspergame, fill=yr)) + 
   coord_flip()
 ```
+Here we can see how each year contributes to to assists for the season, in comparison with the each year and each team. 
+
+
+
+
+
+
+
+
+
 ```{r}
 assistsbyyr |>
   group_by(team, yr) |>
@@ -130,5 +140,4 @@ assistsbyyr |>
     yr == "Fr")
 ```
 
-##joining
 
