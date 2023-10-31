@@ -7,31 +7,32 @@ Do successful (winning) Big Ten teams rely on their first-year players more than
 
 ```{r}
 library(tidyverse)
+library(dplyr)
 ```
 
 Data needed: Players and class standings, Shots by each player (and will compare by their class standings), Goals by each player, Assists by each player, Position (I don't think this is necessary for my question but I think can lead to interesting results and may help me to further expand my analysis to other stories/questions)
 
 ```{r}
-ncaa_players_2022 <- read_csv ("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_playerstats_2022.csv")
+ncaa_players_2023 <- read_csv ("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_playerstats_2023.csv")
 ```
 
 ```{r}
-head(ncaa_players_2022)
+head(ncaa_players_2023)
 ```
 ```{r}
-ncaa_players_2022|>
+ncaa_players_2023|>
   group_by(team, yr) |>
   summarise(
     total = n()
   ) 
 ```
 ```{r}
-ncaa_players_2022|>
+ncaa_players_2023|>
   group_by(team, yr) |>
   summarise(
     total = n(),
     mean_goals = mean(goals)
-  )
+  ) 
 ```
 
 Basically what I want to see is from each team, the avg amount of goals for each yr by team. I wouldn't do it for the NCAA entirely because 1. Looking at the teams separately tells more of a story (we can see if one team relies on one year more than another) 2. We can easily narrow it down to the big 10 teams. 
@@ -40,17 +41,97 @@ I think the above can be a way to do this. I wonder if I am getting somewhere wi
 
 
 ```{r}
-byyr <- ncaa_players_2022 |>
+byyr <- ncaa_players_2023 |>
   mutate(
-    goalspergame = goals/games
-  ) |> 
+    goalspergame = goals/games, 
+    goals <- goals %>% replace(is.na(.), 0)) |>
   filter(
     yr == "Fr" |
     yr == "Sr" |
     yr == "So" | 
-    yr == "Jr")
- 
+    yr == "Jr") |>
+  filter(
+    team == "Ohio St. Buckeyes" |
+    team == "Michigan St. Spartans" |
+    team == "Penn St. Nittany Lions" |
+    team == "Rutgers Scarlet Knights" |
+    team == "Maryland Terrapins, Terps" |
+    team == "Michigan St. Spartans" |
+    team == "Indiana Hoosiers" |
+    team == "Iowa Hawkeyes" |
+    team == "Wisconsin Badgers" |
+    team == "Minnesota Golden Gophers" |
+    team == "Nebraska Huskers" |
+    team == "Northwestern Wildcats" |
+    team == "Illinois St. Redbirds" |
+    team == "Purdue Boilermakers"
+  )
 ```
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=byyr, 
+    aes(x=team, weight=goalspergame, fill=yr)) + 
+  coord_flip()
+```
+So now that we have a graph that represents the amount of goals each year from each team, I think this can more accurately represent the data I would like to display. Additionally, I would like to do the same with minutes played for each year for each Big Ten Team. This all would accurately align with my question. 
+
+
+##minutes played
+
+Calculate the percentage of total minutes played by first-year players for each team. To do that you'll need group_by() to show each team and summarize() to sum up the total minutes, and then do the same for just freshmen using filter(). 
+```{r}
+ncaa_players_2023|>
+  group_by(team, yr) |>
+  mutate(assists <- assists %>% replace(is.na(.), 0)) |>
+  summarise(
+    total = n()
+  ) 
+```
+
+```{r}
+assistsbyyr <- ncaa_players_2023 |>
+  mutate(
+    assistspergame = assists/games, 
+    goals <- goals %>% replace(is.na(.), 0)) |>
+  filter(
+    yr == "Fr" |
+    yr == "Sr" |
+    yr == "So" | 
+    yr == "Jr") |>
+  filter(
+    team == "Ohio St. Buckeyes" |
+    team == "Michigan St. Spartans" |
+    team == "Penn St. Nittany Lions" |
+    team == "Rutgers Scarlet Knights" |
+    team == "Maryland Terrapins, Terps" |
+    team == "Michigan St. Spartans" |
+    team == "Indiana Hoosiers" |
+    team == "Iowa Hawkeyes" |
+    team == "Wisconsin Badgers" |
+    team == "Minnesota Golden Gophers" |
+    team == "Nebraska Huskers" |
+    team == "Northwestern Wildcats" |
+    team == "Illinois St. Redbirds" |
+    team == "Purdue Boilermakers"
+  )
+```
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=byyr, 
+    aes(x=team, weight=goalspergame, fill=yr)) + 
+  coord_flip()
+```
+
+
+
+
+
+
+##This was the previous graph I had constructed. 
 
 ```{r}
 ggplot() + geom_bar(data=byyr, aes(x=yr, weight=goalspergame))

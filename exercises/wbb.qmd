@@ -1,0 +1,105 @@
+##Simulations
+```{r}
+library(tidyverse)
+```
+```{r}
+set.seed(1234)
+
+simulations <- rbinom(n = 1000, size = 20, prob = .317)
+
+table(simulations)
+```
+So were saying, if you did this a thousand more times, we would not get these results. What were talking about is if we would expect to see this outcome. How likely or not is it to occur - how uncommon is it? 
+
+Simulations are good way to check your impulse of going too over or under - hot or cold. 
+
+```{r}
+library(dplyr)
+
+set.seed(1234)
+
+simulations <- rbinom(n = 1000, size = 1, prob = .377)
+
+four_in_a_row <- mean(simulations == 1 & lead(simulations, 1) == 1 & lead(simulations, 2) == 1 & lead(simulations, 3) == 1)
+
+odds <- 1/four_in_a_row
+```
+
+In this case this player is so unlikely for going 4 games without scoring. 
+
+
+##Beeswarm plots
+```{r}
+library(tidyverse)
+library(ggbeeswarm)
+library(ggrepel)
+```
+
+```{r}
+set.seed(1234)
+```
+
+```{r}
+players <- read_csv("https://thescoop.org/sports-data-files/wbb_players_2023.csv")
+```
+```{r}
+activeplayers <- players |> filter(mp>0, position !="NULL") 
+activeplayers <- activeplayers |> mutate(tspct=pts/(2*(fga+0.44*fta)))
+summary(activeplayers$fga)
+```
+Above we are looking at number of FG. 3rd quartile would be considered the better shooters, the players that may be above average. 
+```{r}
+shooters <- activeplayers |> filter(fga > 187)
+ggplot() + geom_beeswarm(data=shooters, aes(x=position, y=tspct), color="grey")
+```
+```{r}
+umd <- activeplayers |> 
+  filter(team == "Maryland") |> 
+  filter(fga>187) |> 
+  arrange(desc(tspct))
+```
+
+
+```{r}
+ggplot() + 
+  geom_beeswarm(
+    data=shooters, 
+    groupOnX=TRUE, 
+    aes(x=position, y=tspct), color="grey") + 
+  geom_beeswarm(
+    data=umd, 
+    groupOnX=TRUE, 
+    aes(x=position, y=tspct), color="red") +
+  geom_text_repel(
+    data=umd, 
+    aes(x=position, y=tspct, label=player))
+```
+
+```{r}
+ggplot() + 
+  geom_quasirandom(
+    data=shooters, 
+    groupOnX=TRUE, 
+    aes(x=position, y=tspct), color="grey") + 
+  geom_quasirandom(
+    data=umd, 
+    groupOnX=TRUE, 
+    aes(x=position, y=tspct), color="red") +
+  geom_text_repel(
+    data=umd, 
+    aes(x=position, y=tspct, label=player))
+```
+
+```{r}
+ggplot() + 
+  geom_jitter(
+    data=shooters, 
+    aes(x=position, y=tspct), color="grey") + 
+  geom_jitter(
+    data=umd, 
+    aes(x=position, y=tspct), color="red") +
+  geom_text_repel(
+    data=umd, 
+    aes(x=position, y=tspct, label=player))
+```
+
