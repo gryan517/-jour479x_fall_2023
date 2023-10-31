@@ -121,7 +121,8 @@ ggplot() +
   coord_flip()
 ```
 Here we can see how each year contributes to to assists for the season, in comparison with the each year and each team. 
-
+Questions: Where in this data do you see a story? 
+Are Freshman a significant contributor to a teams success?/Does this data need more support to answer that? 
 
 
 
