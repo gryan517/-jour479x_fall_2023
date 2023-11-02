@@ -12,7 +12,6 @@ library(scales)
 ncaa_players_2023 <- read_csv ("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_playerstats_2023.csv")
 ```
 
-
 ```{r}
 head(ncaa_players_2023)
 ```
