@@ -141,4 +141,13 @@ assistsbyyr |>
     yr == "Fr")
 ```
 
+Percentage of a team's goals that first-year players account for. That means you'll need to create a dataframe called team_goals by grouping by team and summing up the goals as total_goals, then do the same but filtering only on first-year players, creating a dataframe called first_year_goals with a column called total_first_year_goals. Then you'd join the two dataframes like this:
+combined <- team_goals |> left_join(first_year_goals, join_by(team))
+Next, you'd replace any NAs in total_first_year_goals with 0 and calculate the percentage using mutate().
+
+```{r}
+team_goals <- byyr |>
+  group_by(team)|>
+  summarise (goals/"Fr" == total_goals)
+```
 
