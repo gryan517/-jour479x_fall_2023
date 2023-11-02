@@ -1,9 +1,10 @@
 ##Data Backgrounding 
-Do successful (winning) Big Ten teams rely on their first-year players more than others? 
+Do successful (winning) Big Ten/top 10 teams rely on their first-year players more than others? 
 
 ```{r}
 library(tidyverse)
 library(dplyr)
+library(scales)
 ```
 
 
@@ -22,24 +23,122 @@ ncaa_players_2023|>
     total = n()
   ) 
 ```
+#The general overview
+
+Here I am creating a graph to demonstrate the relationship between each year for each of the top 10 teams.The graph displays the amount of goals each of the years makes in comparison to one another on each team. 
 
 ```{r}
-ncaa_players_2023|>
+player_goals_2023 <- ncaa_players_2023|>
   group_by(team, yr) |>
-  summarise(
-    total = n(),
-    mean_goals = mean(goals)
-  ) 
+  filter(!is.na(goals))|>
+   mutate(
+    goalspergame = goals/games)
 ```
 
-Basically what I want to see is from each team, the avg amount of goals for each yr by team. I wouldn't do it for the NCAA entirely because 1. Looking at the teams separately tells more of a story (we can see if one team relies on one year more than another) 2. We can easily narrow it down to the big 10 teams. 
+Basically what I want to see is from each team, the avg amount of goals for each game by team and yr. I wouldn't do it for the NCAA entirely because 1. Looking at the teams separately tells more of a story (we can see if one team relies on one year more than another) 2. We can easily narrow it down to the big 10 teams or the top 10 teams.
 
 
+##Narrowing it down
+```{r}
+team_gpg_2023 <- player_goals_2023 |>
+  group_by(team)|> 
+  summarise(
+    total_goals = sum(goals), 
+    total_games = sum(games), 
+    team_gpg = total_goals/total_games) |>
+  arrange(desc(team_gpg))
+```
+
+```{r}
+top10 <- team_gpg_2023 |>
+  filter(team_gpg>=0.4385965) |>
+  arrange(desc(team_gpg))
+```
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=top10, 
+    aes(x=reorder(team, team_gpg), weight=team_gpg)) + 
+  coord_flip() + 
+  scale_y_continuous(labels=comma) + 
+  labs(
+    title="", 
+    x="Team", 
+    y="Goals per Game"
+)
+```
+
+```{r}
+team_fr_goals_2023 <- player_goals_2023 |>
+   filter(yr == "Fr") |>
+   group_by(team)|>
+  summarise(total_first_year_goals = sum(goals))|>
+  arrange(desc(total_first_year_goals))
+```
+
+```{r}
+top10fr <- team_fr_goals_2023 |>
+  filter(total_first_year_goals>=13) |>
+  arrange(desc(total_first_year_goals))
+```
+
+```{r}
+ggplot() + 
+  geom_bar(
+    data=top10fr, 
+    aes(x=reorder(team, total_first_year_goals), weight=total_first_year_goals)) + 
+  coord_flip() + 
+  scale_y_continuous(labels=comma) + 
+  labs(
+    title="", 
+    x="Team", 
+    y="Goals per Game")
+```
+
+```{r}
+combined <- team_gpg_2023 |> left_join(team_fr_goals_2023, join_by(team))
+```
+
+
+```{r}
+team_fr_pct <- combined |>
+  mutate(fr_pct = (total_first_year_goals/total_goals)*100)|>
+  mutate(fr_pct <- fr_pct %>% replace(is.na(.), 0))|>
+  arrange(desc(fr_pct))
+```
+
+```{r}
+ggplot() + geom_point(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals)) +
+  geom_smooth(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals), method="lm") + 
+  scale_y_continuous(labels=comma) + 
+  labs(
+    title="", 
+    x="Total Goals", 
+    y="Total First Year Goals")
+```
+
+
+```{r}
+delaware <- team_fr_pct |> filter(team == "Delaware St. Hornets")
+```
+
+```{r}
+ggplot() + geom_point(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals)) +
+  geom_smooth(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals), method="lm") +
+  geom_point(data=delaware, aes(x=total_goals, y=total_first_year_goals), color="red") + 
+  scale_y_continuous(labels=comma) + 
+  labs(
+    title="", 
+    x="Total Goals", 
+    y="Total First Year Goals")
+```
+
+##What About Big Ten Teams?
 ```{r}
 byyr <- ncaa_players_2023 |>
   mutate(
-    goalspergame = goals/games, 
-    goals <- goals %>% replace(is.na(.), 0)) |>
+    goalspergame = goals/games) |>
   filter(
     yr == "Fr" |
     yr == "Sr" |
@@ -67,7 +166,7 @@ Here I am creating a graph to demonstrate the relationship between each year for
 ggplot() + 
   geom_bar(
     data=byyr, 
-    aes(x=team, weight=goalspergame, fill=yr)) + 
+    aes(x=reorder(team, goalspergame), weight=goalspergame, fill=yr)) + 
   coord_flip()
 ```
 
@@ -117,37 +216,11 @@ assistsbyyr <- ncaa_players_2023 |>
 ggplot() + 
   geom_bar(
     data=assistsbyyr, 
-    aes(x=team, weight=assistspergame, fill=yr)) + 
+    aes(x=reorder(team, assistspergame), weight=assistspergame, fill=yr)) + 
   coord_flip()
 ```
 Here we can see how each year contributes to to assists for the season, in comparison with the each year and each team. 
 Questions: Where in this data do you see a story? 
 Are Freshman a significant contributor to a teams success?/Does this data need more support to answer that? 
 
-
-
-
-
-
-
-
-```{r}
-assistsbyyr |>
-  group_by(team, yr) |>
-  summarise(
-    sum = (assists)
-  ) |>
-  filter(
-    yr == "Fr")
-```
-
-Percentage of a team's goals that first-year players account for. That means you'll need to create a dataframe called team_goals by grouping by team and summing up the goals as total_goals, then do the same but filtering only on first-year players, creating a dataframe called first_year_goals with a column called total_first_year_goals. Then you'd join the two dataframes like this:
-combined <- team_goals |> left_join(first_year_goals, join_by(team))
-Next, you'd replace any NAs in total_first_year_goals with 0 and calculate the percentage using mutate().
-
-```{r}
-team_goals <- byyr |>
-  group_by(team)|>
-  summarise (goals/"Fr" == total_goals)
-```
 
