@@ -40,12 +40,46 @@ Basically what I want to see is from each team, the avg amount of goals for each
 ##Narrowing it down
 ```{r}
 team_gpg_2023 <- player_goals_2023 |>
-  group_by(team)|> 
+  group_by(team, yr)|> 
   summarise(
     total_goals = sum(goals), 
-    total_games = sum(games), 
+    total_games = max(games), 
     team_gpg = total_goals/total_games) |>
   arrange(desc(team_gpg))
+```
+##Highest scoring offensive 
+```{r}
+ggplot() + geom_point(data=team_gpg_2023, aes(x=total_goals, y=total_games))
+```
+##Big Ten
+```{r}
+big_ten_gpg_2023 <- team_gpg_2023 |>
+  filter(
+    yr == "Fr" |
+    yr == "Sr" |
+    yr == "So" | 
+    yr == "Jr") |>
+  filter(
+    team == "Ohio St. Buckeyes" |
+    team == "Michigan St. Spartans" |
+    team == "Penn St. Nittany Lions" |
+    team == "Rutgers Scarlet Knights" |
+    team == "Maryland Terrapins, Terps" |
+    team == "Michigan St. Spartans" |
+    team == "Indiana Hoosiers" |
+    team == "Iowa Hawkeyes" |
+    team == "Wisconsin Badgers" |
+    team == "Minnesota Golden Gophers" |
+    team == "Nebraska Huskers" |
+    team == "Northwestern Wildcats" |
+    team == "Illinois St. Redbirds" |
+    team == "Purdue Boilermakers"
+  ) |>
+  arrange(desc(team_gpg))
+```
+
+```{r}
+ggplot() + geom_point(data=big_ten_gpg_2023, aes(x=total_goals, y=total_games))
 ```
 
 ```{r}
@@ -73,14 +107,10 @@ team_fr_goals_2023 <- player_goals_2023 |>
    filter(yr == "Fr") |>
    group_by(team)|>
   summarise(total_first_year_goals = sum(goals))|>
-  arrange(desc(total_first_year_goals))
+  arrange(desc(total_first_year_goals)) |>
+  head(10)
 ```
 
-```{r}
-top10fr <- team_fr_goals_2023 |>
-  filter(total_first_year_goals>=13) |>
-  arrange(desc(total_first_year_goals))
-```
 
 ```{r}
 ggplot() + 
@@ -102,8 +132,8 @@ combined <- team_gpg_2023 |> left_join(team_fr_goals_2023, join_by(team))
 
 ```{r}
 team_fr_pct <- combined |>
+ mutate(total_first_year_goals = replace_na(total_first_year_goals, 0)) |> 
   mutate(fr_pct = (total_first_year_goals/total_goals)*100)|>
-  mutate(fr_pct <- fr_pct %>% replace(is.na(.), 0))|>
   arrange(desc(fr_pct))
 ```
 
@@ -136,8 +166,9 @@ ggplot() + geom_point(data=team_fr_pct, aes(x=total_goals, y=total_first_year_go
 ##What About Big Ten Teams?
 ```{r}
 byyr <- ncaa_players_2023 |>
-  mutate(
-    goalspergame = goals/games) |>
+  group_by(team, yr) |>
+  summarize(
+    team_gpg = goals/games) |>
   filter(
     yr == "Fr" |
     yr == "Sr" |
@@ -165,7 +196,7 @@ Here I am creating a graph to demonstrate the relationship between each year for
 ggplot() + 
   geom_bar(
     data=byyr, 
-    aes(x=reorder(team, goalspergame), weight=goalspergame, fill=yr)) + 
+    aes(x=reorder(team, team_gpg), weight=team_gpg, fill=yr)) + 
   coord_flip()
 ```
 
@@ -185,9 +216,9 @@ ncaa_players_2023|>
 
 ```{r}
 assistsbyyr <- ncaa_players_2023 |>
-  mutate(
-    assistspergame = assists/games, 
-    goals <- goals %>% replace(is.na(.), 0)) |>
+  group_by(team, yr) |>
+  summarize(
+    team_gpg = goals/games) |>
   filter(
     yr == "Fr" |
     yr == "Sr" |
