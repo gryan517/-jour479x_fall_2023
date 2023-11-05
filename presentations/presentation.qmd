@@ -24,7 +24,7 @@ ncaa_players_2023|>
 ```
 #The general overview
 
-Here I am creating a graph to demonstrate the relationship between each year for each of the top 10 teams.The graph displays the amount of goals each of the years makes in comparison to one another on each team. 
+Here I am creating a graph to demonstrate the relationship between each year for each of the top 10 teams.The graph displays the amount of goals each team makes per game.
 
 ```{r}
 player_goals_2023 <- ncaa_players_2023|>
@@ -34,31 +34,35 @@ player_goals_2023 <- ncaa_players_2023|>
     goalspergame = goals/games)
 ```
 
-Basically what I want to see is from each team, the avg amount of goals for each game by team and yr. I wouldn't do it for the NCAA entirely because 1. Looking at the teams separately tells more of a story (we can see if one team relies on one year more than another) 2. We can easily narrow it down to the big 10 teams or the top 10 teams.
+Basically what I want to see is from each team, the amount of goals for each game by team and yr. I wouldn't do it for the NCAA entirely because 1. Looking at the teams separately tells more of a story (we can see if one team relies on one year more than another) 2. We can easily narrow it down to the big 10 teams or the top 10 teams.
 
 
 ##Narrowing it down
 ```{r}
 team_gpg_2023 <- player_goals_2023 |>
-  group_by(team, yr)|> 
+  group_by(team)|> 
   summarise(
     total_goals = sum(goals), 
     total_games = max(games), 
     team_gpg = total_goals/total_games) |>
   arrange(desc(team_gpg))
 ```
+
 ##Highest scoring offensive 
 ```{r}
-ggplot() + geom_point(data=team_gpg_2023, aes(x=total_goals, y=total_games))
+umd_gpg_2023 <- team_gpg_2023 |> filter(team == "Maryland Terrapins, Terps")
 ```
+
+```{r}
+ggplot() + geom_point(data=team_gpg_2023, aes(x=total_games, y=total_goals)) +
+  geom_point(data=umd_gpg_2023, aes(x=total_games, y=total_goals), color="red")
+```
+
 ##Big Ten
+
 ```{r}
 big_ten_gpg_2023 <- team_gpg_2023 |>
-  filter(
-    yr == "Fr" |
-    yr == "Sr" |
-    yr == "So" | 
-    yr == "Jr") |>
+  group_by (team) |>
   filter(
     team == "Ohio St. Buckeyes" |
     team == "Michigan St. Spartans" |
@@ -75,23 +79,20 @@ big_ten_gpg_2023 <- team_gpg_2023 |>
     team == "Illinois St. Redbirds" |
     team == "Purdue Boilermakers"
   ) |>
-  arrange(desc(team_gpg))
+  arrange(desc(team_gpg)) 
 ```
 
 ```{r}
-ggplot() + geom_point(data=big_ten_gpg_2023, aes(x=total_goals, y=total_games))
+ggplot() + geom_point(data=big_ten_gpg_2023, aes(x=total_games, y=total_goals)) +
+  geom_point(data=umd_gpg_2023, aes(x=total_games, y=total_goals), color="red")
 ```
 
-```{r}
-top10 <- team_gpg_2023 |>
-  filter(team_gpg>=0.4385965) |>
-  arrange(desc(team_gpg))
-```
+##Top 10
 
 ```{r}
 ggplot() + 
   geom_bar(
-    data=top10, 
+    data=head(team_gpg_2023,10), 
     aes(x=reorder(team, team_gpg), weight=team_gpg)) + 
   coord_flip() + 
   scale_y_continuous(labels=comma) + 
@@ -103,24 +104,39 @@ ggplot() +
 ```
 
 ```{r}
+ggplot() + 
+  geom_bar(
+    data=tail(team_gpg_2023,12), 
+    aes(x=reorder(team, team_gpg), weight=team_gpg)) + 
+  coord_flip() + 
+  scale_y_continuous(labels=comma) + 
+  labs(
+    title="", 
+    x="Team", 
+    y="Goals per Game"
+)
+```
+
+##What about the Freshman players?
+```{r}
 team_fr_goals_2023 <- player_goals_2023 |>
    filter(yr == "Fr") |>
    group_by(team)|>
   summarise(total_first_year_goals = sum(goals))|>
-  arrange(desc(total_first_year_goals)) |>
-  head(10)
+  arrange(desc(total_first_year_goals)) 
 ```
+
 
 
 ```{r}
 ggplot() + 
   geom_bar(
-    data=top10fr, 
+    data=head(team_fr_goals_2023, 10), 
     aes(x=reorder(team, total_first_year_goals), weight=total_first_year_goals)) + 
   coord_flip() + 
   scale_y_continuous(labels=comma) + 
   labs(
-    title="", 
+    title="Leading Freshman Scorers", 
     x="Team", 
     y="Goals per Game")
 ```
@@ -137,6 +153,19 @@ team_fr_pct <- combined |>
   arrange(desc(fr_pct))
 ```
 
+
+```{r}
+umd_player_goals_2023 <- player_goals_2023 |>
+  group_by(team)|> 
+  summarise(
+    total_goals = sum(goals), 
+    total_games = max(games)
+```
+
+```{r}
+umd_player_goals_2023 <- player_goals_2023 |> filter(team == "Maryland Terrapins, Terps")
+```
+
 ```{r}
 ggplot() + geom_point(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals)) +
   geom_smooth(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals), method="lm") + 
@@ -144,7 +173,9 @@ ggplot() + geom_point(data=team_fr_pct, aes(x=total_goals, y=total_first_year_go
   labs(
     title="", 
     x="Total Goals", 
-    y="Total First Year Goals")
+    y="Total First Year Goals") +
+    geom_point(data=____, aes(x=total_games, y=total_goals), color="red")
+
 ```
 
 
