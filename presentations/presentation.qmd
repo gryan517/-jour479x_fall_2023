@@ -192,7 +192,6 @@ ggplot() + geom_point(data=team_fr_pct, aes(x=total_goals, y=total_first_year_go
   geom_point(data=top_freshman_goals, aes(x=total_games, y=total_goals), color="green") +
   geom_point(data=two_top_freshman_goals, aes(x=total_games, y=total_goals), color="blue") 
 ```
-```
 
 Conclusion: No. Though there are teams that do such as Tex. A&M-Commerce Lions(green), and South Alabama Jaguars(blue). 
 
@@ -235,6 +234,7 @@ byyr <- ncaa_players_2023 |>
     team == "Purdue Boilermakers"
   )
 ```
+
 Here I am creating a graph to demonstrate the relationship between each year for each of the Big 10 teams.The graph displays the amount of goals each of the years makes in comparison to one another on each team. 
 ```{r}
 ggplot() + 
@@ -244,56 +244,8 @@ ggplot() +
   coord_flip()
 ```
 
-So now that we have a graph that represents the amount of goals each year from each team, I think this can more accurately represent the data I would like to display. Lets see how each year contributes to assists... 
 
-
-##assists by year
-```{r}
-ncaa_players_2023|>
-  group_by(team, yr) |>
-  mutate(assists <- assists %>% replace(is.na(.), 0)) |>
-  summarise(
-    total = n()
-  ) 
-```
-
-
-```{r}
-assistsbyyr <- ncaa_players_2023 |>
-  group_by(team, yr) |>
-  summarize(
-    team_gpg = goals/games) |>
-  filter(
-    yr == "Fr" |
-    yr == "Sr" |
-    yr == "So" | 
-    yr == "Jr") |>
-  filter(
-    team == "Ohio St. Buckeyes" |
-    team == "Michigan St. Spartans" |
-    team == "Penn St. Nittany Lions" |
-    team == "Rutgers Scarlet Knights" |
-    team == "Maryland Terrapins, Terps" |
-    team == "Michigan St. Spartans" |
-    team == "Indiana Hoosiers" |
-    team == "Iowa Hawkeyes" |
-    team == "Wisconsin Badgers" |
-    team == "Minnesota Golden Gophers" |
-    team == "Nebraska Huskers" |
-    team == "Northwestern Wildcats" |
-    team == "Illinois St. Redbirds" |
-    team == "Purdue Boilermakers"
-  )
-```
-
-```{r}
-ggplot() + 
-  geom_bar(
-    data=assistsbyyr, 
-    aes(x=reorder(team, assistspergame), weight=assistspergame, fill=yr)) + 
-  coord_flip()
-```
-Here we can see how each year contributes to to assists for the season, in comparison with the each year and each team. 
+Here we can see how each year contributes to to goals per game for the season, in comparison with the each year and each team. 
 Questions: Where in this data do you see a story? 
 Are Freshman a significant contributor to a teams success?/Does this data need more support to answer that? 
 
