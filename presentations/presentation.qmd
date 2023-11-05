@@ -150,17 +150,17 @@ combined <- team_gpg_2023 |> left_join(team_fr_goals_2023, join_by(team))
 team_fr_pct <- combined |>
  mutate(total_first_year_goals = replace_na(total_first_year_goals, 0)) |> 
   mutate(fr_pct = (total_first_year_goals/total_goals)*100)|>
-  arrange(desc(fr_pct))
+  arrange(desc(total_first_year_goals))
 ```
-
 
 ```{r}
-umd_player_goals_2023 <- player_goals_2023 |>
-  group_by(team)|> 
-  summarise(
-    total_goals = sum(goals), 
-    total_games = max(games)
+top_freshman_goals <- team_fr_pct |> filter(team =="Tex. A&M-Commerce Lions")
 ```
+
+```{r}
+two_top_freshman_goals <- team_fr_pct |> filter(team == "South Alabama Jaguars")
+```
+
 
 ```{r}
 umd_player_goals_2023 <- player_goals_2023 |> filter(team == "Maryland Terrapins, Terps")
@@ -171,28 +171,27 @@ ggplot() + geom_point(data=team_fr_pct, aes(x=total_goals, y=total_first_year_go
   geom_smooth(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals), method="lm") + 
   scale_y_continuous(labels=comma) + 
   labs(
-    title="", 
+    title="UMD Does not re", 
     x="Total Goals", 
     y="Total First Year Goals") +
-    geom_point(data=____, aes(x=total_games, y=total_goals), color="red")
-
+    geom_point(data=umd_gpg_2023, aes(x=total_games, y=total_goals), color="red") +
+  geom_point(data=top_freshman_goals, aes(x=total_games, y=total_goals), color="green") +
+  geom_point(data=two_top_freshman_goals, aes(x=total_games, y=total_goals), color="blue") 
+```
 ```
 
+Conclusion: No. Though there are teams that do such as Tex. A&M-Commerce Lions(green), and South Alabama Jaguars(blue). 
 
-```{r}
-delaware <- team_fr_pct |> filter(team == "Delaware St. Hornets")
-```
 
-```{r}
-ggplot() + geom_point(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals)) +
-  geom_smooth(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals), method="lm") +
-  geom_point(data=delaware, aes(x=total_goals, y=total_first_year_goals), color="red") + 
-  scale_y_continuous(labels=comma) + 
-  labs(
-    title="", 
-    x="Total Goals", 
-    y="Total First Year Goals")
-```
+
+
+
+
+
+
+
+
+
 
 ##What About Big Ten Teams?
 ```{r}
