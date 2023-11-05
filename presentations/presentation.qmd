@@ -134,6 +134,10 @@ team_fr_goals_2023 <- player_goals_2023 |>
   arrange(desc(total_first_year_goals)) 
 ```
 
+```{r}
+umd_fr_goals_2023 <- team_fr_goals_2023 |> filter(team == "Maryland Terrapins, Terps")
+```
+
 
 
 ```{r}
