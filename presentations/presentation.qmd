@@ -55,7 +55,11 @@ umd_gpg_2023 <- team_gpg_2023 |> filter(team == "Maryland Terrapins, Terps")
 
 ```{r}
 ggplot() + geom_point(data=team_gpg_2023, aes(x=total_games, y=total_goals)) +
-  geom_point(data=umd_gpg_2023, aes(x=total_games, y=total_goals), color="red")
+  geom_point(data=umd_gpg_2023, aes(x=total_games, y=total_goals), color="red") +
+    labs(
+    title="UMD scores average Goals", 
+    x="Total Goals", 
+    y="Total Goals")
 ```
 
 ##Big Ten
@@ -84,7 +88,11 @@ big_ten_gpg_2023 <- team_gpg_2023 |>
 
 ```{r}
 ggplot() + geom_point(data=big_ten_gpg_2023, aes(x=total_games, y=total_goals)) +
-  geom_point(data=umd_gpg_2023, aes(x=total_games, y=total_goals), color="red")
+  geom_point(data=umd_gpg_2023, aes(x=total_games, y=total_goals), color="red") +
+  labs(
+    title="In the Big Ten UMD scores low", 
+    x="Total Goals", 
+    y="Total Goals")
 ```
 
 ##Top 10
@@ -97,7 +105,7 @@ ggplot() +
   coord_flip() + 
   scale_y_continuous(labels=comma) + 
   labs(
-    title="", 
+    title="Top Goal Per Game", 
     x="Team", 
     y="Goals per Game"
 )
@@ -111,7 +119,7 @@ ggplot() +
   coord_flip() + 
   scale_y_continuous(labels=comma) + 
   labs(
-    title="", 
+    title="How many UMD Goals per Game?", 
     x="Team", 
     y="Goals per Game"
 )
@@ -141,6 +149,8 @@ ggplot() +
     y="Goals per Game")
 ```
 
+
+#Combining 
 ```{r}
 combined <- team_gpg_2023 |> left_join(team_fr_goals_2023, join_by(team))
 ```
