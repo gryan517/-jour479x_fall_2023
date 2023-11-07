@@ -34,7 +34,7 @@ player_goals_2023 <- ncaa_players_2023|>
     goalspergame = goals/games)
 ```
 
-Basically what I want to see is from each team, the amount of goals for each game by team and yr. I wouldn't do it for the NCAA entirely because 1. Looking at the teams separately tells more of a story (we can see if one team relies on one year more than another) 2. We can easily narrow it down to the big 10 teams or the top 10 teams.
+Basically what I want to see is from each team, the amount of goals for each game by team and yr. I wouldn't do it for the NCAA entirely because 1. Looking at the teams separately tells more of a story (we can see if one team relies on one year more than another) 2. We can easily narrow it down to the big 10 teams or the top 10 teams (of goals per game).
 
 
 ##Narrowing it down
@@ -57,8 +57,8 @@ umd_gpg_2023 <- team_gpg_2023 |> filter(team == "Maryland Terrapins, Terps")
 ggplot() + geom_point(data=team_gpg_2023, aes(x=total_games, y=total_goals)) +
   geom_point(data=umd_gpg_2023, aes(x=total_games, y=total_goals), color="red") +
     labs(
-    title="UMD scores average Goals", 
-    x="Total Goals", 
+    title="UMD scores below average Goals", 
+    x="Total Games", 
     y="Total Goals")
 ```
 
@@ -185,7 +185,7 @@ ggplot() + geom_point(data=team_fr_pct, aes(x=total_goals, y=total_first_year_go
   geom_smooth(data=team_fr_pct, aes(x=total_goals, y=total_first_year_goals), method="lm") + 
   scale_y_continuous(labels=comma) + 
   labs(
-    title="UMD Does not re", 
+    title="", 
     x="Total Goals", 
     y="Total First Year Goals") +
     geom_point(data=umd_gpg_2023, aes(x=total_games, y=total_goals), color="red") +
