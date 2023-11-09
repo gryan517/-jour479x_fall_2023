@@ -1,6 +1,7 @@
 ```{r}
 library(tidyverse)
 library(Hmisc)
+library(rvest)
 ```
 ```{r}
 logs <- read_csv ("https://dwillis.github.io/sports-data-files/cbblogs1523.csv")
@@ -258,4 +259,15 @@ ggplot() +
   facet_wrap(~Season)
 ```
 But, when we take a look at UMD's field goal percentage, there is a clearer indication on when UMD will have a winning or losing outcome. When there is a closer game in shooting accuracy, UMD seems to match/slightly exceed their opponents enough to win. So far in this season, its a bit difficult to tell, but my guess would be that UMD is looking at a promising season in compared to previous seasons. 
+
+##scraping data
+```{r}
+url <- "http://www.cfbstats.com/2023/leader/national/team/offense/split01/category09/sort01.html"
+
+scoringoffense <- url |>
+  read_html()|>
+  html_table()
+
+scoring_df <- scoringoffense [[1]]
+```
 
