@@ -228,3 +228,34 @@ ggplot() +
   scale_y_continuous(limits = c(0, .70))
 ```
 
+##Early Season Analysis - Nov.9 
+
+```{r}
+games <- read_csv("https://raw.githubusercontent.com/dwillis/dwillis.github.io/main/docs/sports-data-files/cbblogs1524.csv")
+```
+
+```{r}
+earlyseasongames <- games |> 
+  filter (TeamFull == "Maryland Terrapins") |>
+  filter (Game<=15) |>
+  group_by(Season)
+```
+
+```{r}
+ggplot() + 
+  geom_point(data=earlyseasongames, aes(x=Team3PPCT, y=Opponent3PPCT, color=W_L)) +
+  scale_y_continuous(limits = c(0, .7)) + 
+  scale_x_continuous(limits = c(0, .7)) + 
+  facet_wrap(~Season)
+```
+A win or loss is very unpredictive based upon 3 pointers. SO trying to make an educated guess on how the season will turnout for UMD is difficult from 3PPCT. 
+
+```{r}
+ggplot() + 
+  geom_point(data=earlyseasongames, aes(x=TeamFGPCT, y=OpponentFGPCT, color=W_L)) +
+  scale_y_continuous(limits = c(0, .7)) + 
+  scale_x_continuous(limits = c(0, .7)) + 
+  facet_wrap(~Season)
+```
+But, when we take a look at UMD's field goal percentage, there is a clearer indication on when UMD will have a winning or losing outcome. When there is a closer game in shooting accuracy, UMD seems to match/slightly exceed their opponents enough to win. So far in this season, its a bit difficult to tell, but my guess would be that UMD is looking at a promising season in compared to previous seasons. 
+
