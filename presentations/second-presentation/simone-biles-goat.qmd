@@ -1,0 +1,12 @@
+According to https://themedalcount.com/2020/09/18/ranking-the-most-dominant-all-arounders-in-gymnastics-history/ , Simone Biles is the most decorated gymmnast of all time, and has the most AA (all-around) titles in women's gymnastics.
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(scales)
+```
+```{r}
+womens_gymnastics <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/main/cleandata/data_2017_2021.csv")
+```
+
+
