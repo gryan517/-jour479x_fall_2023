@@ -1,0 +1,20 @@
+```{r}
+library(tidyverse)
+library(hoopR)
+```
+
+```{r}
+lineups <- nba_teamdashlineups(team_id = 1610612752)[[2]]
+```
+
+```{r}
+lineups <- lineups |>
+  mutate(across(starts_with("GP"):ncol(lineups), as.numeric))
+```
+```{r}
+lineups |>
+  filter(!str_detect(GROUP_NAME, "Barrett")) |>
+  select(GROUP_NAME, GP, MIN, PLUS_MINUS)|>
+  arrange(desc(PLUS_MINUS))
+```
+My takeaway is that Barrett is among the highest played and most successful lineup played. Barrett is a significant component to consistently high and positive lineups. 
