@@ -118,6 +118,10 @@ team_margins |>
 ## Top and Bottom
 
 ```{r}
+```
+
+
+```{r}
 top10 <- team_margins |> ungroup() |>  top_n(10, wt=avg_margin) |> mutate(display = paste(team, year))
 bottom10 <- team_margins |> ungroup() |> top_n(10, wt=-avg_margin)|> mutate(display = paste(team, year))
 
