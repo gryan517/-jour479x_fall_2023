@@ -5,8 +5,24 @@ library(tidyverse)
 library(dplyr)
 library(scales)
 ```
+
 ```{r}
-womens_gymnastics <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/main/cleandata/data_2017_2021.csv")
+gymnastics2021 <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/main/cleandata/data_2017_2021.csv")
+```
+```{r}
+gymnastics2022 <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/main/cleandata/data_2022_2023.csv")
 ```
 
+
+```{r}
+womens_gymnastics |>
+  group_by(Apparatus, Score) |>
+  mutate(str_sub(Apparatus, start = 1L, end = -1L))
+```
+
+
+```{r}
+ggplot() + 
+  geom_point(data=womens_gymnastics, aes(x=`Score`, y=`D_Score`), color="grey")
+```
 
