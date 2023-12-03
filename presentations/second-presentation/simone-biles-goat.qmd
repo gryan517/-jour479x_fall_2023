@@ -20,7 +20,8 @@ teamavgs <- gymnastics2021 |>
 
 ```{r}
 teamavgs |>
-group_by(Country, newcol, Apparatus)|>
+group_by(Country, newcol, Apparatus, LastName, FirstName)|>
+  
   summarise(
     ScoreAvg = mean(Score), 
     D_ScoreAvg = mean(D_Score), 
@@ -29,11 +30,8 @@ group_by(Country, newcol, Apparatus)|>
     ) 
 ```
 
-
-
-
 ```{r}
 ggplot() + 
-  geom_point(data=womens_gymnastics, aes(x=`Score`, y=`D_Score`), color="grey")
+  geom_point(data=teamavgs, aes(x=`Apparatus`, y=`Score`), color="grey")
 ```
 
