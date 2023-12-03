@@ -4,6 +4,7 @@ According to https://themedalcount.com/2020/09/18/ranking-the-most-dominant-all-
 library(tidyverse)
 library(dplyr)
 library(scales)
+library(stringr)
 ```
 
 ```{r}
@@ -13,8 +14,13 @@ gymnastics2021 <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/
 gymnastics2022 <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/main/cleandata/data_2022_2023.csv")
 ```
 ```{r}
-teamavgs <- gymnastics2021 |> 
-  group_by(Country, Apparatus) |> 
+teamavgs <- gymnastics2021 |>
+  mutate(newcol = str_extract(Apparatus, 'VT'))
+```
+
+```{r}
+teamavgs |>
+group_by(Country, newcol, Apparatus)|>
   summarise(
     ScoreAvg = mean(Score), 
     D_ScoreAvg = mean(D_Score), 
@@ -22,17 +28,8 @@ teamavgs <- gymnastics2021 |>
     PenaltyAvg = mean(Penalty)
     ) 
 ```
-```{r}
-teamavgs |>
-  arrange(desc(ScoreAvg))
-```
 
 
-```{r}
-womens_gymnastics |>
-  group_by(Apparatus, Score) |>
-  mutate(str_sub(Apparatus, start = 1L, end = -1L))
-```
 
 
 ```{r}
