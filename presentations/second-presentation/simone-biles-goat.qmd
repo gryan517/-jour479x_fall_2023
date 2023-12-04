@@ -5,6 +5,7 @@ library(tidyverse)
 library(dplyr)
 library(scales)
 library(stringr)
+library(ggplot2)
 ```
 
 ```{r}
@@ -14,12 +15,20 @@ gymnastics2021 <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/
 gymnastics2022 <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/main/cleandata/data_2022_2023.csv")
 ```
 ```{r}
-teamavgs <- gymnastics2021 |>
-  mutate(newcol = str_extract(Apparatus, 'VT'))
+combined <- bind_rows(gymnastics2021, gymnastics2022)
+
+combined <- combined |>
+  mutate(apparatus_clean = substr(Apparatus, 1L, 2L))
+```
+
+
+```{r}
+teamavgs <- combined |>
+  mutate(newcol = if_else(is.na(str_extract(Apparatus, 'VT')), false='VT', true=Apparatus), keep='unused')
 ```
 
 ```{r}
-teamavgs |>
+teamavgs <- teamavgs |>
 group_by(Country, newcol, Apparatus, LastName, FirstName)|>
   
   summarise(
@@ -29,9 +38,37 @@ group_by(Country, newcol, Apparatus, LastName, FirstName)|>
     PenaltyAvg = mean(Penalty)
     ) 
 ```
+This is giving me some trouble:
+```{r}
+teamzscore <- teamavgs |> 
+  group_by(Country, newcol, Apparatus, LastName, FirstName)|>
+  mutate(
+    ScoreZscore = as.numeric(scale(ScoreAvg, center = TRUE, scale = TRUE)),
+    D_ScoreZscore = as.numeric(scale(D_ScoreAvg, center = TRUE, scale = TRUE)),
+    E_ScoreZscore = as.numeric(scale(E_ScoreAvg, center = TRUE, scale = TRUE)) * -1,
+    PenaltyZscore = as.numeric(scale(PenaltyAvg, center = TRUE, scale = TRUE)) * -1,
+    TotalZscore = ScoreZscore + D_ScoreZscore + E_ScoreZscore + PenaltyZscore
+  )  
+```
 
 ```{r}
-ggplot() + 
-  geom_point(data=teamavgs, aes(x=`Apparatus`, y=`Score`), color="grey")
+bileszscore <- teamavgs |>
+filter(LastName == 'BILES')
+
+ggplot() +
+  geom_bar(
+    data=bileszscore, 
+    aes(x=newcol, weight=ScoreAvg)) +
+  labs(
+    title="Biles by Apparatus 2021-2023", 
+    x="Apparatus", 
+    y="Average Score"
+)
+  
 ```
+VT is more because she has more of them. This is a bit misleading because whereas on the other apparatuses she does the routine once, where as on vault she does this multiple times, so has more scores. Although her scores are highest on vault, this is still a misleading graph.
+
+I would like to do a stacked bar chart of D_Score to Score, Penalty to Score, and E_Score to evaluate her success. 
+
+
 
