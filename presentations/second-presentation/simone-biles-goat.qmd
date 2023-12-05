@@ -23,42 +23,46 @@ combined <- combined |>
 
 
 ```{r}
-teamavgs <- combined |>
-  mutate(newcol = if_else(is.na(str_extract(Apparatus, 'VT')), false='VT', true=Apparatus), keep='unused')
-```
-
-```{r}
-teamavgs <- teamavgs |>
-group_by(Country, newcol, Apparatus, LastName, FirstName)|>
+athlete_apparatus_avgs <- combined |>
+group_by(Country, apparatus_clean, LastName, FirstName)|>
   
   summarise(
+    count= n(),
     ScoreAvg = mean(Score), 
     D_ScoreAvg = mean(D_Score), 
-    E_ScoreAvg = mean(E_Score),
-    PenaltyAvg = mean(Penalty)
+    E_ScoreAvg = mean(E_Score)
+    ) 
+
+athlete_avgs <- combined |>
+group_by(Country, LastName, FirstName)|>
+  
+  summarise(
+    count= n(),
+    ScoreAvg = mean(Score), 
+    D_ScoreAvg = mean(D_Score), 
+    E_ScoreAvg = mean(E_Score)
     ) 
 ```
 This is giving me some trouble:
 ```{r}
-teamzscore <- teamavgs |> 
-  group_by(Country, newcol, Apparatus, LastName, FirstName)|>
+teamzscore <- athlete_apparatus_avgs |> 
+  group_by(Country, apparatus_clean, LastName, FirstName)|>
   mutate(
     ScoreZscore = as.numeric(scale(ScoreAvg, center = TRUE, scale = TRUE)),
     D_ScoreZscore = as.numeric(scale(D_ScoreAvg, center = TRUE, scale = TRUE)),
     E_ScoreZscore = as.numeric(scale(E_ScoreAvg, center = TRUE, scale = TRUE)) * -1,
-    PenaltyZscore = as.numeric(scale(PenaltyAvg, center = TRUE, scale = TRUE)) * -1,
-    TotalZscore = ScoreZscore + D_ScoreZscore + E_ScoreZscore + PenaltyZscore
+    TotalZscore = ScoreZscore + D_ScoreZscore + E_ScoreZscore
   )  
 ```
 
 ```{r}
-bileszscore <- teamavgs |>
+bileszscore <- teamzscore |>
 filter(LastName == 'BILES')
 
 ggplot() +
   geom_bar(
     data=bileszscore, 
-    aes(x=newcol, weight=ScoreAvg)) +
+    aes(x=apparatus_clean, weight=ScoreAvg)) +
   labs(
     title="Biles by Apparatus 2021-2023", 
     x="Apparatus", 
@@ -70,5 +74,29 @@ VT is more because she has more of them. This is a bit misleading because wherea
 
 I would like to do a stacked bar chart of D_Score to Score, Penalty to Score, and E_Score to evaluate her success. 
 
+##Parity
+```{r}
+parity_index22 <- gymnastics2022 |> mutate(apparatus_clean = substr(Apparatus, 1L, 2L)) |>
+  group_by(Country, apparatus_clean, LastName, FirstName) |> 
+  summarise(ScoreAvg = mean(Score), D_ScoreAvg = mean(D_Score)) |> 
+  mutate(parity_index = (ScoreAvg + 100) / (D_ScoreAvg + 100)) /
 
+parity_index21 <- gymnastics2021 |> 
+  mutate(apparatus_clean = substr(Apparatus, 1L, 2L)) |>
+  group_by(Country, apparatus_clean, LastName, FirstName) |> 
+  summarise(ScoreAvg = mean(Score), D_ScoreAvg = mean(D_Score)) |> 
+  mutate(parity_index = (ScoreAvg + 100) / (D_ScoreAvg + 100))
+```
 
+If one gymnast has a lower parity score, a higher difficulty score, and a higher overall score compared to another gymnast, it suggests that the former gymnast is likely excelling in terms of both difficulty and execution of her routines. Here's how you might interpret these comparisons:
+
+1. **Lower Parity Score:**
+   - A lower parity score implies that the judges are more consistent in their evaluations of this gymnast's performances. There is less variability in the scores given by different judges, suggesting a fair and consistent assessment of her routines.
+
+2. **Higher Difficulty Score:**
+   - The higher difficulty score indicates that this gymnast is performing more challenging elements and skills in her routines. Difficulty scores are typically based on the complexity and risk associated with the elements performed, and a higher difficulty score reflects a higher level of technical skill.
+
+3. **Higher Overall Score:**
+   - The higher overall score suggests that not only is the gymnast incorporating more difficult elements into her routines, but she is also executing those elements well. The overall score takes into account both difficulty and execution, indicating that this gymnast is excelling in both aspects of her performance.
+
+In summary, a gymnast with lower parity, higher difficulty score, and higher overall score is likely a technically proficient athlete who performs routines with a high level of difficulty and executes them exceptionally well. This combination of factors suggests a strong and skilled gymnast who is consistently recognized for her abilities by the judging panel. It's important to note that achieving this kind of performance requires a combination of athleticism, precision, and mastery of advanced gymnastics skills.
