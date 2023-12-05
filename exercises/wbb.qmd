@@ -127,3 +127,62 @@ ggplot() +
     )
 ```
 Including people who have at least played one minute. 
+
+##Parity
+```{r}
+logs <- read_csv("https://thescoop.org/sports-data-files/wbblogs24.csv")
+rankings <- read_csv("https://thescoop.org/sports-data-files/wbb_rankings.csv")
+logs23 <- read_csv("https://thescoop.org/sports-data-files/wbblogs23.csv")
+```
+#Parity Index = (SRS + 100) / (SOS + 100)
+To deal with positive values. 
+```{r}
+parity_index24 <- logs |> 
+  group_by(Team, Conference) |> 
+  summarise(srs_score = mean(TeamSRS), sos_score = mean(TeamSOS)) |> 
+  mutate(parity_index = (srs_score + 100) / (sos_score + 100))
+
+parity_index23 <- logs23 |> 
+  group_by(Team, Conference) |> 
+  summarise(srs_score = mean(TeamSRS), sos_score = mean(TeamSOS)) |> 
+  mutate(parity_index = (srs_score + 100) / (sos_score + 100))
+```
+The higher the parity score the better they should perform. SRS is high you're winning a lot. 
+
+```{r}
+parity_index24 |> 
+  filter(Conference == 'Big Ten WBB') |> 
+  ggplot() + 
+  geom_point(aes(x=srs_score, y = sos_score, label = Team)) +
+  geom_text(aes(x=srs_score, y = sos_score, label = Team))
+```
+Big Ten seems to be more internally competitive. 
+
+```{r}
+parity_with_top25 <- parity_index24 |> left_join(rankings, join_by(Team == team))
+```
+
+The higher the parity is the higher they are likely to compete against more difficult opponents, not they are necessarily better.
+
+```{r}
+combined_data <- bind_rows(parity_index24 |> mutate(season="2024"), parity_index23 |> mutate(season = "2023")) 
+
+result <- combined_data %>%
+  group_by(Team) %>%
+  summarize(
+    Parity_Index_2024 = mean(parity_index[season == "2024"]),
+    Parity_Index_2023 = mean(parity_index[season == "2023"])
+  ) %>%
+  filter(!is.na(Parity_Index_2024)) |> 
+  filter(!is.na(Parity_Index_2023)) |>
+  ungroup() %>%
+  summarise(
+    p_value = t.test(Parity_Index_2024, Parity_Index_2023, paired = TRUE)$p.value,
+    mean_difference = mean(Parity_Index_2024 - Parity_Index_2023)
+  )
+```
+
+p-value over .05 and close to 1 there's little to distinguish in the means of parity indexes - it could be a result of random chance. Mean difference is also very tiny. 
+
+
+The trouble in comparing last season and a portion of the current season can not be helpful in that your comparing a entire season to part of a season or helpful in seeing that playing cupcake teams early on should have had a difference in last season (i.g. lower p-value, higher mean).
