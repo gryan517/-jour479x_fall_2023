@@ -1,4 +1,4 @@
-According to https://themedalcount.com/2020/09/18/ranking-the-most-dominant-all-arounders-in-gymnastics-history/ , Simone Biles is the most decorated gymmnast of all time, and has the most AA (all-around) titles in women's gymnastics.
+According to https://themedalcount.com/2020/09/18/ranking-the-most-dominant-all-arounders-in-gymnastics-history/ , Simone Biles is the most decorated gymnast of all time, and has the most AA (all-around) titles in women's gymnastics. I wanted to examine whether the success of her score was due to her execution or difficulty. 
 
 ```{r}
 library(tidyverse)
@@ -41,9 +41,8 @@ group_by(Country, LastName, FirstName)|>
     ScoreAvg = mean(Score), 
     D_ScoreAvg = mean(D_Score), 
     E_ScoreAvg = mean(E_Score)
-    ) 
+    )
 ```
-This is giving me some trouble:
 ```{r}
 teamzscore <- athlete_apparatus_avgs |> 
   group_by(Country, apparatus_clean, LastName, FirstName)|>
@@ -54,6 +53,61 @@ teamzscore <- athlete_apparatus_avgs |>
     TotalZscore = ScoreZscore + D_ScoreZscore + E_ScoreZscore
   )  
 ```
+    
+```{r}
+ggplot() + geom_point(data=athlete_avgs, aes(x=ScoreAvg, y=D_ScoreAvg)) +
+  geom_point(data=biles, aes(x=ScoreAvg, y=D_ScoreAvg), color="red") +
+  labs(
+    x="Average Score Overall", 
+    y="Average Difficulty Score"
+)
+```
+This is a bit cluttered don't you think?
+  
+```{r}
+sum(athlete_avgs$ScoreAvg, na.rm = TRUE) 
+```
+Let's narrow the data... From here I can infer that the median is about 12 from dividing this by the total number of columns/entries. I did this to better focus the data.
+
+```{r}
+athlete_avgs_median <- athlete_avgs |>
+    filter(ScoreAvg > 12)
+```
+
+  
+```{r}
+biles <- athlete_avgs |> filter(LastName == "BILES")
+```
+
+```{r}
+ggplot() + geom_point(data=athlete_avgs_median, aes(x=ScoreAvg, y=D_ScoreAvg)) +
+  geom_point(data=biles, aes(x=ScoreAvg, y=D_ScoreAvg), color="red") +
+  labs(
+    title="Biles beats the bunch, among the top 10", 
+    x="Average Score Overall", 
+    y="Average Difficulty Score"
+)
+```
+Much better! Now we can see that across all athletes in the sport, Simone is among the top 10 overall performers of women's gymnastics in 2021-2023. Hoe much does Simone Biles' success contribute to teh USA team?
+
+```{r}
+usa_median <- athlete_avgs_median |>
+  filter(Country == "USA")
+```
+
+```{r}
+ggplot() + geom_point(data=usa_median, aes(x=ScoreAvg, y=D_ScoreAvg)) +
+  geom_point(data=biles, aes(x=ScoreAvg, y=D_ScoreAvg), color="red") +
+  labs(
+    title="Biles balances difficulty with grace on USA team", 
+    x="Average Score Overall", 
+    y="Average Difficulty Score"
+)
+```
+Interesting... Although Simone does not have the strongest difficulty score among USA gymnasts, I would infer her overall higher average score means that her execution of her skills overall puts her in this position. 
+
+But, this is an average of ALL the apparatuses. Where Simone is an AA gymnasts (who competes on all of the apparatuses), some athletes only compete on one or select few apparatuses. This makes her position all the more impressive. 
+
 
 ```{r}
 bileszscore <- teamzscore |>
@@ -70,7 +124,9 @@ ggplot() +
 )
   
 ```
-VT is more because she has more of them. This is a bit misleading because whereas on the other apparatuses she does the routine once, where as on vault she does this multiple times, so has more scores. Although her scores are highest on vault, this is still a misleading graph.
+At first Vaults (VT) were abnormally more than the other apparatuses. I discovered that this was due to the recurring number of them being accounted for within the data. in other words, Vault is a unique element in that athletes can perform once, twice, and even scratch (which is when a team, coach or athlete decides to withdraw from an event or meet).
+
+The disparity between vault and the other apparatuses is a bit misleading, whereas on the other apparatuses she does the routine once, on vault she does this multiple times, so has more scores to be accounted for within her average. Although her scores are highest on vault, this is still was an inaccurate representation.
 
 I would like to do a stacked bar chart of D_Score to Score, Penalty to Score, and E_Score to evaluate her success. 
 
@@ -87,6 +143,7 @@ parity_index21 <- gymnastics2021 |>
   summarise(ScoreAvg = mean(Score), D_ScoreAvg = mean(D_Score)) |> 
   mutate(parity_index = (ScoreAvg + 100) / (D_ScoreAvg + 100))
 ```
+"Biles makes winning look easy"
 
 If one gymnast has a lower parity score, a higher difficulty score, and a higher overall score compared to another gymnast, it suggests that the former gymnast is likely excelling in terms of both difficulty and execution of her routines. Here's how you might interpret these comparisons:
 
