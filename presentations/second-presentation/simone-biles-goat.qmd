@@ -1,4 +1,4 @@
-According to https://themedalcount.com/2020/09/18/ranking-the-most-dominant-all-arounders-in-gymnastics-history/ , Simone Biles is the most decorated gymnast of all time, and has the most AA (all-around) titles in women's gymnastics. I wanted to examine whether the success of her score was due to her execution or difficulty. 
+According to https://themedalcount.com/2020/09/18/ranking-the-most-dominant-all-arounders-in-gymnastics-history/ , Simone Biles is the most decorated gymnast of all time, and has the most AA (all-around) titles in women's gymnastics. I wanted to examine whether the success of her score was due to her execution or difficulty.
 
 ```{r}
 library(tidyverse)
@@ -11,9 +11,11 @@ library(ggplot2)
 ```{r}
 gymnastics2021 <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/main/cleandata/data_2017_2021.csv")
 ```
+
 ```{r}
 gymnastics2022 <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/main/cleandata/data_2022_2023.csv")
 ```
+
 ```{r}
 combined <- bind_rows(gymnastics2021, gymnastics2022)
 
@@ -21,28 +23,32 @@ combined <- combined |>
   mutate(apparatus_clean = substr(Apparatus, 1L, 2L))
 ```
 
-
 ```{r}
 athlete_apparatus_avgs <- combined |>
-group_by(Country, apparatus_clean, LastName, FirstName)|>
+group_by(Country, apparatus_clean, LastName, FirstName, Gender)|>
   
   summarise(
     count= n(),
     ScoreAvg = mean(Score), 
     D_ScoreAvg = mean(D_Score), 
     E_ScoreAvg = mean(E_Score)
-    ) 
+    ) |>
+  
+filter(Gender == 'w')
 
 athlete_avgs <- combined |>
-group_by(Country, LastName, FirstName)|>
+group_by(Country, LastName, FirstName, Gender)|>
   
   summarise(
     count= n(),
     ScoreAvg = mean(Score), 
     D_ScoreAvg = mean(D_Score), 
     E_ScoreAvg = mean(E_Score)
-    )
+    ) |>
+
+filter(Gender == 'w')
 ```
+
 ```{r}
 teamzscore <- athlete_apparatus_avgs |> 
   group_by(Country, apparatus_clean, LastName, FirstName)|>
@@ -53,7 +59,7 @@ teamzscore <- athlete_apparatus_avgs |>
     TotalZscore = ScoreZscore + D_ScoreZscore + E_ScoreZscore
   )  
 ```
-    
+
 ```{r}
 ggplot() + geom_point(data=athlete_avgs, aes(x=ScoreAvg, y=D_ScoreAvg)) +
   geom_point(data=biles, aes(x=ScoreAvg, y=D_ScoreAvg), color="red") +
@@ -62,19 +68,20 @@ ggplot() + geom_point(data=athlete_avgs, aes(x=ScoreAvg, y=D_ScoreAvg)) +
     y="Average Difficulty Score"
 )
 ```
+
 This is a bit cluttered don't you think?
-  
+
 ```{r}
 sum(athlete_avgs$ScoreAvg, na.rm = TRUE) 
 ```
-Let's narrow the data... From here I can infer that the median is about 12 from dividing this by the total number of columns/entries. I did this to better focus the data.
+
+Let's narrow the data... From here I can infer that the median is about 11 from dividing this by the total number of columns/entries (approximately 936). I did this to better focus the data.
 
 ```{r}
 athlete_avgs_median <- athlete_avgs |>
-    filter(ScoreAvg > 12)
+    filter(ScoreAvg > 11)
 ```
 
-  
 ```{r}
 biles <- athlete_avgs |> filter(LastName == "BILES")
 ```
@@ -83,12 +90,17 @@ biles <- athlete_avgs |> filter(LastName == "BILES")
 ggplot() + geom_point(data=athlete_avgs_median, aes(x=ScoreAvg, y=D_ScoreAvg)) +
   geom_point(data=biles, aes(x=ScoreAvg, y=D_ScoreAvg), color="red") +
   labs(
-    title="Biles beats the bunch, among the top 10", 
+    title="Biles beats the bunch, among the top 3", 
     x="Average Score Overall", 
     y="Average Difficulty Score"
 )
 ```
-Much better! Now we can see that across all athletes in the sport, Simone is among the top 10 overall performers of women's gymnastics in 2021-2023. Hoe much does Simone Biles' success contribute to teh USA team?
+
+Much better! Now we can see that across all athletes in the sport, Biles is among the top 3 overall performers of women's gymnastics in 2021-2023. How much does Simone Biles' success contribute to the USA team?
+
+Originally, at this point, Biles was still among the top 10 athletes, but in comparison her difficulty wasnt as high as the other gymnasts. I was a bit skeptical of this... How can she be one fo the most highly decorated and ranked womens gymnasts as of recent and not have a higher difficulty? I was led to believe that her score wasn't as a result of her difficulty, but her execution of her skills.
+
+In working with the data further below I came t realize that I was including both mens and womens athletes under the impression that the data was only of womens gymnastics, skewing my results. 
 
 ```{r}
 usa_median <- athlete_avgs_median |>
@@ -104,10 +116,10 @@ ggplot() + geom_point(data=usa_median, aes(x=ScoreAvg, y=D_ScoreAvg)) +
     y="Average Difficulty Score"
 )
 ```
-Interesting... Although Simone does not have the strongest difficulty score among USA gymnasts, I would infer her overall higher average score means that her execution of her skills overall puts her in this position. 
 
-But, this is an average of ALL the apparatuses. Where Simone is an AA gymnasts (who competes on all of the apparatuses), some athletes only compete on one or select few apparatuses. This makes her position all the more impressive. 
+As headlines state, this is what I expected to see in the data. Simone excels in difficulty contributing to her average score among USA gymnasts, I would infer her overall higher average score means that her execution of her skills overall puts her in this position.
 
+But, this is an average of ALL the apparatuses. Where Simone is an AA gymnasts (who competes on all of the apparatuses), some athletes only compete on one or select few apparatuses. This makes her position all the more impressive.
 
 ```{r}
 bileszscore <- teamzscore |>
@@ -122,15 +134,47 @@ ggplot() +
     x="Apparatus", 
     y="Average Score"
 )
-  
 ```
 At first Vaults (VT) were abnormally more than the other apparatuses. I discovered that this was due to the recurring number of them being accounted for within the data. in other words, Vault is a unique element in that athletes can perform once, twice, and even scratch (which is when a team, coach or athlete decides to withdraw from an event or meet).
 
 The disparity between vault and the other apparatuses is a bit misleading, whereas on the other apparatuses she does the routine once, on vault she does this multiple times, so has more scores to be accounted for within her average. Although her scores are highest on vault, this is still was an inaccurate representation.
 
-I would like to do a stacked bar chart of D_Score to Score, Penalty to Score, and E_Score to evaluate her success. 
+```{r}
+biles_vault <- bileszscore |>
+  filter(apparatus_clean == 'VT')
+```
+
+
+```{r}
+ggplot() +
+  geom_bar(
+    data = bileszscore, 
+    aes(x = apparatus_clean, y = ScoreAvg),
+    stat = "identity", fill = "gray"
+  ) +
+  geom_bar(
+    data = filter(biles_vault, apparatus_clean == "VT"), 
+    aes(x = apparatus_clean, y = ScoreAvg),
+    stat = "identity", fill = "blue"
+  ) +
+  labs(
+    title = "Biles is pretty consistent, vault is where she soars", 
+    x = "Apparatus", 
+    y = "Average Score"
+  ) +
+  scale_fill_manual(values = c("gray", "blue"))  
+
+```
+Although it isn't a great disparity in comparison to the other 
+
+
+
+
+
+I would like to do a stacked bar chart of D_Score to Score, Penalty to Score, and E_Score to evaluate her success.
 
 ##Parity
+
 ```{r}
 parity_index22 <- gymnastics2022 |> mutate(apparatus_clean = substr(Apparatus, 1L, 2L)) |>
   group_by(Country, apparatus_clean, LastName, FirstName) |> 
@@ -143,17 +187,16 @@ parity_index21 <- gymnastics2021 |>
   summarise(ScoreAvg = mean(Score), D_ScoreAvg = mean(D_Score)) |> 
   mutate(parity_index = (ScoreAvg + 100) / (D_ScoreAvg + 100))
 ```
+
 "Biles makes winning look easy"
 
 If one gymnast has a lower parity score, a higher difficulty score, and a higher overall score compared to another gymnast, it suggests that the former gymnast is likely excelling in terms of both difficulty and execution of her routines. Here's how you might interpret these comparisons:
 
-1. **Lower Parity Score:**
-   - A lower parity score implies that the judges are more consistent in their evaluations of this gymnast's performances. There is less variability in the scores given by different judges, suggesting a fair and consistent assessment of her routines.
-
-2. **Higher Difficulty Score:**
-   - The higher difficulty score indicates that this gymnast is performing more challenging elements and skills in her routines. Difficulty scores are typically based on the complexity and risk associated with the elements performed, and a higher difficulty score reflects a higher level of technical skill.
-
-3. **Higher Overall Score:**
-   - The higher overall score suggests that not only is the gymnast incorporating more difficult elements into her routines, but she is also executing those elements well. The overall score takes into account both difficulty and execution, indicating that this gymnast is excelling in both aspects of her performance.
+1.  **Lower Parity Score:**
+    -   A lower parity score implies that the judges are more consistent in their evaluations of this gymnast's performances. There is less variability in the scores given by different judges, suggesting a fair and consistent assessment of her routines.
+2.  **Higher Difficulty Score:**
+    -   The higher difficulty score indicates that this gymnast is performing more challenging elements and skills in her routines. Difficulty scores are typically based on the complexity and risk associated with the elements performed, and a higher difficulty score reflects a higher level of technical skill.
+3.  **Higher Overall Score:**
+    -   The higher overall score suggests that not only is the gymnast incorporating more difficult elements into her routines, but she is also executing those elements well. The overall score takes into account both difficulty and execution, indicating that this gymnast is excelling in both aspects of her performance.
 
 In summary, a gymnast with lower parity, higher difficulty score, and higher overall score is likely a technically proficient athlete who performs routines with a high level of difficulty and executes them exceptionally well. This combination of factors suggests a strong and skilled gymnast who is consistently recognized for her abilities by the judging panel. It's important to note that achieving this kind of performance requires a combination of athleticism, precision, and mastery of advanced gymnastics skills.
