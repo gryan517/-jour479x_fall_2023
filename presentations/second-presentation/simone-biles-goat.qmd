@@ -17,10 +17,12 @@ gymnastics2022 <- read_csv("https://raw.githubusercontent.com/ucsas/gym2024data/
 ```
 
 ```{r}
-combined <- bind_rows(gymnastics2021, gymnastics2022)
+combined <- bind_rows(gymnastics2021, gymnastics2022) |>
+  filter(Gender == 'w')
 
 combined <- combined |>
-  mutate(apparatus_clean = substr(Apparatus, 1L, 2L))
+  mutate(apparatus_clean = substr(Apparatus, 1L, 2L)) |>
+  filter(Gender == 'w')
 ```
 
 ```{r}
@@ -158,7 +160,7 @@ ggplot() +
     stat = "identity", fill = "blue"
   ) +
   labs(
-    title = "Biles is pretty consistent, vault is where she soars", 
+    title = "Biles is dependable, vault is where she soars", 
     x = "Apparatus", 
     y = "Average Score"
   ) +
