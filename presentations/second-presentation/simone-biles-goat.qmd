@@ -23,11 +23,16 @@ combined <- bind_rows(gymnastics2021, gymnastics2022) |>
 combined <- combined |>
   mutate(apparatus_clean = substr(Apparatus, 1L, 2L)) |>
   filter(Gender == 'w')
+  
+filtered <- combined |>
+  mutate(apparatus_combine= ifelse(apparatus_clean %in% c('UB', 'UE'), 'UB', as.character(apparatus_clean))) |>
+
+  filter(Gender == 'w')
 ```
 
 ```{r}
-athlete_apparatus_avgs <- combined |>
-group_by(Country, apparatus_clean, LastName, FirstName, Gender)|>
+athlete_apparatus_avgs <- filtered |>
+group_by(Country, apparatus_combine, LastName, FirstName, Gender)|>
   
   summarise(
     count= n(),
@@ -38,7 +43,7 @@ group_by(Country, apparatus_clean, LastName, FirstName, Gender)|>
   
 filter(Gender == 'w')
 
-athlete_avgs <- combined |>
+athlete_avgs <- filtered |>
 group_by(Country, LastName, FirstName, Gender)|>
   
   summarise(
@@ -53,7 +58,7 @@ filter(Gender == 'w')
 
 ```{r}
 teamzscore <- athlete_apparatus_avgs |> 
-  group_by(Country, apparatus_clean, LastName, FirstName)|>
+  group_by(Country, apparatus_combine, LastName, FirstName)|>
   mutate(
     ScoreZscore = as.numeric(scale(ScoreAvg, center = TRUE, scale = TRUE)),
     D_ScoreZscore = as.numeric(scale(D_ScoreAvg, center = TRUE, scale = TRUE)),
@@ -130,7 +135,7 @@ filter(LastName == 'BILES')
 ggplot() +
   geom_bar(
     data=bileszscore, 
-    aes(x=apparatus_clean, weight=ScoreAvg)) +
+    aes(x=apparatus_combine, weight=ScoreAvg)) +
   labs(
     title="Biles by Apparatus 2021-2023", 
     x="Apparatus", 
@@ -143,7 +148,7 @@ The disparity between vault and the other apparatuses is a bit misleading, where
 
 ```{r}
 biles_vault <- bileszscore |>
-  filter(apparatus_clean == 'VT')
+  filter(apparatus_combine == 'VT')
 ```
 
 
@@ -151,12 +156,12 @@ biles_vault <- bileszscore |>
 ggplot() +
   geom_bar(
     data = bileszscore, 
-    aes(x = apparatus_clean, y = ScoreAvg),
+    aes(x = apparatus_combine, y = ScoreAvg),
     stat = "identity", fill = "gray"
   ) +
   geom_bar(
-    data = filter(biles_vault, apparatus_clean == "VT"), 
-    aes(x = apparatus_clean, y = ScoreAvg),
+    data = filter(biles_vault, apparatus_combine == "VT"), 
+    aes(x = apparatus_combine, y = ScoreAvg),
     stat = "identity", fill = "blue"
   ) +
   labs(
@@ -167,7 +172,7 @@ ggplot() +
   scale_fill_manual(values = c("gray", "blue"))  
 
 ```
-Although it isn't a great disparity in comparison to the other 
+Although it isn't a great disparity in comparison to the other we can see 
 
 
 
