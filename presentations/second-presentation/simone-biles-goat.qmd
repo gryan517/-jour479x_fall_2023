@@ -21,13 +21,10 @@ combined <- bind_rows(gymnastics2021, gymnastics2022) |>
   filter(Gender == 'w')
 
 combined <- combined |>
-  mutate(apparatus_clean = substr(Apparatus, 1L, 2L)) |>
-  filter(Gender == 'w')
+  mutate(apparatus_clean = substr(Apparatus, 1L, 2L)) 
   
 filtered <- combined |>
-  mutate(apparatus_combine= ifelse(apparatus_clean %in% c('UB', 'UE'), 'UB', as.character(apparatus_clean))) |>
-
-  filter(Gender == 'w')
+  mutate(apparatus_combine= ifelse(apparatus_clean %in% c('UB', 'UE'), 'UB', as.character(apparatus_clean)))
 ```
 
 ```{r}
@@ -39,9 +36,7 @@ group_by(Country, apparatus_combine, LastName, FirstName, Gender)|>
     ScoreAvg = mean(Score), 
     D_ScoreAvg = mean(D_Score), 
     E_ScoreAvg = mean(E_Score)
-    ) |>
-  
-filter(Gender == 'w')
+    ) 
 
 athlete_avgs <- filtered |>
 group_by(Country, LastName, FirstName, Gender)|>
@@ -51,21 +46,10 @@ group_by(Country, LastName, FirstName, Gender)|>
     ScoreAvg = mean(Score), 
     D_ScoreAvg = mean(D_Score), 
     E_ScoreAvg = mean(E_Score)
-    ) |>
-
-filter(Gender == 'w')
+    ) 
 ```
 
-```{r}
-teamzscore <- athlete_apparatus_avgs |> 
-  group_by(Country, apparatus_combine, LastName, FirstName)|>
-  mutate(
-    ScoreZscore = as.numeric(scale(ScoreAvg, center = TRUE, scale = TRUE)),
-    D_ScoreZscore = as.numeric(scale(D_ScoreAvg, center = TRUE, scale = TRUE)),
-    E_ScoreZscore = as.numeric(scale(E_ScoreAvg, center = TRUE, scale = TRUE)) * -1,
-    TotalZscore = ScoreZscore + D_ScoreZscore + E_ScoreZscore
-  )  
-```
+
 
 ```{r}
 ggplot() + geom_point(data=athlete_avgs, aes(x=ScoreAvg, y=D_ScoreAvg)) +
@@ -76,21 +60,28 @@ ggplot() + geom_point(data=athlete_avgs, aes(x=ScoreAvg, y=D_ScoreAvg)) +
 )
 ```
 
+
 This is a bit cluttered don't you think?
 
 ```{r}
-sum(athlete_avgs$ScoreAvg, na.rm = TRUE) 
+sum(athlete_apparatus_avgs$ScoreAvg, na.rm = TRUE) 
 ```
 
-Let's narrow the data... From here I can infer that the median is about 11 from dividing this by the total number of columns/entries (approximately 936). I did this to better focus the data.
+Let's narrow the data... From here I can infer that the median is about 12 from dividing this by the total number of columns/entries. I did this to better focus the data.
 
 ```{r}
 athlete_avgs_median <- athlete_avgs |>
-    filter(ScoreAvg > 11)
+    filter(ScoreAvg > 12)
 ```
 
 ```{r}
-biles <- athlete_avgs |> filter(LastName == "BILES")
+biles <- athlete_avgs |> 
+  group_by(Country, LastName, FirstName, Gender)|>
+  filter(LastName == "BILES")
+
+bilesapparatus <- athlete_apparatus_avgs |>
+  group_by(Country, LastName, FirstName, apparatus_combine, Gender)|>
+  filter(LastName == "BILES")
 ```
 
 ```{r}
@@ -129,12 +120,12 @@ As headlines state, this is what I expected to see in the data. Simone excels in
 But, this is an average of ALL the apparatuses. Where Simone is an AA gymnasts (who competes on all of the apparatuses), some athletes only compete on one or select few apparatuses. This makes her position all the more impressive.
 
 ```{r}
-bileszscore <- teamzscore |>
+biles <- athlete_avgs_median |>
 filter(LastName == 'BILES')
 
 ggplot() +
   geom_bar(
-    data=bileszscore, 
+    data=bilesapparatus, 
     aes(x=apparatus_combine, weight=ScoreAvg)) +
   labs(
     title="Biles by Apparatus 2021-2023", 
@@ -155,7 +146,7 @@ biles_vault <- bileszscore |>
 ```{r}
 ggplot() +
   geom_bar(
-    data = bileszscore, 
+    data = bilesapparatus, 
     aes(x = apparatus_combine, y = ScoreAvg),
     stat = "identity", fill = "gray"
   ) +
@@ -169,31 +160,21 @@ ggplot() +
     x = "Apparatus", 
     y = "Average Score"
   ) +
-  scale_fill_manual(values = c("gray", "blue"))  
+  scale_fill_manual(values = c("gray", "blue"))
 
 ```
-Although it isn't a great disparity in comparison to the other we can see 
+Although it isn't a great disparity in comparison to the other apparatuses, we can see all apparatus, besides vault, is below an average score of 15. 
 
 
-
-
-
-I would like to do a stacked bar chart of D_Score to Score, Penalty to Score, and E_Score to evaluate her success.
-
-##Parity
+Looking at her best event,
 
 ```{r}
-parity_index22 <- gymnastics2022 |> mutate(apparatus_clean = substr(Apparatus, 1L, 2L)) |>
-  group_by(Country, apparatus_clean, LastName, FirstName) |> 
-  summarise(ScoreAvg = mean(Score), D_ScoreAvg = mean(D_Score)) |> 
-  mutate(parity_index = (ScoreAvg + 100) / (D_ScoreAvg + 100)) /
-
-parity_index21 <- gymnastics2021 |> 
-  mutate(apparatus_clean = substr(Apparatus, 1L, 2L)) |>
-  group_by(Country, apparatus_clean, LastName, FirstName) |> 
-  summarise(ScoreAvg = mean(Score), D_ScoreAvg = mean(D_Score)) |> 
-  mutate(parity_index = (ScoreAvg + 100) / (D_ScoreAvg + 100))
+correlations <- bilesapparatus |> 
+  mutate(
+    differential =  ScoreAvg - D_ScoreAvg
+    )
 ```
+
 
 "Biles makes winning look easy"
 
