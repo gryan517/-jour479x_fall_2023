@@ -1,3 +1,4 @@
+
 According to https://themedalcount.com/2020/09/18/ranking-the-most-dominant-all-arounders-in-gymnastics-history/ , Simone Biles is the most decorated gymnast of all time, and has the most AA (all-around) titles in women's gymnastics. I wanted to examine whether the success of her score was due to her execution or difficulty.
 
 ```{r}
@@ -49,8 +50,6 @@ group_by(Country, LastName, FirstName, Gender)|>
     ) 
 ```
 
-
-
 ```{r}
 ggplot() + geom_point(data=athlete_avgs, aes(x=ScoreAvg, y=D_ScoreAvg)) +
   geom_point(data=biles, aes(x=ScoreAvg, y=D_ScoreAvg), color="red") +
@@ -59,7 +58,6 @@ ggplot() + geom_point(data=athlete_avgs, aes(x=ScoreAvg, y=D_ScoreAvg)) +
     y="Average Difficulty Score"
 )
 ```
-
 
 This is a bit cluttered don't you think?
 
@@ -98,7 +96,7 @@ Much better! Now we can see that across all athletes in the sport, Biles is amon
 
 Originally, at this point, Biles was still among the top 10 athletes, but in comparison her difficulty wasnt as high as the other gymnasts. I was a bit skeptical of this... How can she be one fo the most highly decorated and ranked womens gymnasts as of recent and not have a higher difficulty? I was led to believe that her score wasn't as a result of her difficulty, but her execution of her skills.
 
-In working with the data further below I came t realize that I was including both mens and womens athletes under the impression that the data was only of womens gymnastics, skewing my results. 
+In working with the data further below I came t realize that I was including both mens and womens athletes under the impression that the data was only of womens gymnastics, skewing my results.
 
 ```{r}
 usa_median <- athlete_avgs_median |>
@@ -133,6 +131,7 @@ ggplot() +
     y="Average Score"
 )
 ```
+
 At first Vaults (VT) were abnormally more than the other apparatuses. I discovered that this was due to the recurring number of them being accounted for within the data. in other words, Vault is a unique element in that athletes can perform once, twice, and even scratch (which is when a team, coach or athlete decides to withdraw from an event or meet).
 
 The disparity between vault and the other apparatuses is a bit misleading, whereas on the other apparatuses she does the routine once, on vault she does this multiple times, so has more scores to be accounted for within her average. Although her scores are highest on vault, this is still was an inaccurate representation.
@@ -141,7 +140,6 @@ The disparity between vault and the other apparatuses is a bit misleading, where
 biles_vault <- bileszscore |>
   filter(apparatus_combine == 'VT')
 ```
-
 
 ```{r}
 ggplot() +
@@ -163,8 +161,8 @@ ggplot() +
   scale_fill_manual(values = c("gray", "blue"))
 
 ```
-Although it isn't a great disparity in comparison to the other apparatuses, we can see all apparatus, besides vault, is below an average score of 15. 
 
+Although it isn't a great disparity in comparison to the other apparatuses, we can see all apparatus, besides vault, is below an average score of 15.
 
 Looking at her best event,
 
@@ -179,10 +177,8 @@ correlations <- bilesapparatus |>
 fit <- lm(differential ~ E_ScoreAvg, data = correlations)
 summary(fit)
 ```
-p-value: 0.00761 < 0.05
-statistically significant 
-adjusted r-squared: 97%
-HIGHLY correlated 
+
+p-value: 0.00761 \< 0.05 statistically significant adjusted r-squared: 97% HIGHLY correlated
 
 ```{r}
 correlations2 <- bilesapparatus |> 
@@ -195,12 +191,7 @@ correlations2 <- bilesapparatus |>
 net <- lm(differential ~ D_ScoreAvg, data = correlations)
 summary(net)
 ```
-p-value: 0.1379 > 0.05
-not statistically significant 
-adjusted r-squared: 61%
-not as correlated
+
+p-value: 0.1379 \> 0.05 not statistically significant adjusted r-squared: 61% not as correlated
 
 In summary, the execution score is more dependent on Simone Biles' difficulty score than vice versa. Meaning that Biles' difficulty score is more so correlated to the success of her highest scored apparatus.
-
-
-
