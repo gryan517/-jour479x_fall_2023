@@ -175,16 +175,32 @@ correlations <- bilesapparatus |>
     )
 ```
 
+```{r}
+fit <- lm(differential ~ E_ScoreAvg, data = correlations)
+summary(fit)
+```
+p-value: 0.00761 < 0.05
+statistically significant 
+adjusted r-squared: 97%
+HIGHLY correlated 
 
-"Biles makes winning look easy"
+```{r}
+correlations2 <- bilesapparatus |> 
+  mutate(
+    differential =  ScoreAvg - E_ScoreAvg
+    )
+```
 
-If one gymnast has a lower parity score, a higher difficulty score, and a higher overall score compared to another gymnast, it suggests that the former gymnast is likely excelling in terms of both difficulty and execution of her routines. Here's how you might interpret these comparisons:
+```{r}
+net <- lm(differential ~ D_ScoreAvg, data = correlations)
+summary(net)
+```
+p-value: 0.1379 > 0.05
+not statistically significant 
+adjusted r-squared: 61%
+not as correlated
 
-1.  **Lower Parity Score:**
-    -   A lower parity score implies that the judges are more consistent in their evaluations of this gymnast's performances. There is less variability in the scores given by different judges, suggesting a fair and consistent assessment of her routines.
-2.  **Higher Difficulty Score:**
-    -   The higher difficulty score indicates that this gymnast is performing more challenging elements and skills in her routines. Difficulty scores are typically based on the complexity and risk associated with the elements performed, and a higher difficulty score reflects a higher level of technical skill.
-3.  **Higher Overall Score:**
-    -   The higher overall score suggests that not only is the gymnast incorporating more difficult elements into her routines, but she is also executing those elements well. The overall score takes into account both difficulty and execution, indicating that this gymnast is excelling in both aspects of her performance.
+In summary, the execution score is more dependent on Simone Biles' difficulty score than vice versa. Meaning that Biles' difficulty score is more so correlated to the success of her highest scored apparatus.
 
-In summary, a gymnast with lower parity, higher difficulty score, and higher overall score is likely a technically proficient athlete who performs routines with a high level of difficulty and executes them exceptionally well. This combination of factors suggests a strong and skilled gymnast who is consistently recognized for her abilities by the judging panel. It's important to note that achieving this kind of performance requires a combination of athleticism, precision, and mastery of advanced gymnastics skills.
+
+
